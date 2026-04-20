@@ -4,13 +4,17 @@ An Elixir client for the [Attio REST API](https://developers.attio.com).
 
 ## Installation
 
+Add `attio` to your dependencies in `mix.exs`:
+
+<!-- x-release-please-start-version -->
 ```elixir
 def deps do
   [
-    {:attio, "~> 0.1"}
+    {:attio, "~> 0.1.1"}
   ]
 end
 ```
+<!-- x-release-please-end -->
 
 ## Usage
 

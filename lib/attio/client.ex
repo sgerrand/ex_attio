@@ -42,6 +42,34 @@ defmodule Attio.Client do
   end
 
   @doc false
+  @spec paginate(t(), (keyword() -> {:ok, map()} | {:error, term()}), keyword()) ::
+          Enumerable.t()
+  def paginate(%__MODULE__{}, list_fn, params \\ []) do
+    Stream.resource(
+      fn -> {params, nil, false} end,
+      fn
+        {_params, _cursor, :done} ->
+          {:halt, nil}
+
+        {params, cursor, false} ->
+          req_params = if cursor, do: Keyword.put(params, :cursor, cursor), else: params
+
+          case list_fn.(req_params) do
+            {:ok, %{"data" => data, "pagination" => %{"next_cursor" => nil}}} ->
+              {data, {params, nil, :done}}
+
+            {:ok, %{"data" => data, "pagination" => %{"next_cursor" => next}}} ->
+              {data, {params, next, false}}
+
+            {:error, err} ->
+              throw({:attio_stream_error, err})
+          end
+      end,
+      fn _ -> :ok end
+    )
+  end
+
+  @doc false
   @spec request(t(), atom(), String.t(), keyword()) ::
           {:ok, term()} | {:error, Attio.Error.t() | Exception.t()}
   def request(%__MODULE__{req: req}, method, path, opts \\ []) do

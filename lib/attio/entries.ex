@@ -36,31 +36,13 @@ defmodule Attio.Entries do
 
   @doc """
   Returns a lazy stream of all entries in a list across all pages.
+
+  Accepts the same options as `list/3`. Raises `{:attio_stream_error, error}`
+  on API failure mid-stream.
   """
   @spec stream(Client.t(), String.t(), keyword()) :: Enumerable.t()
   def stream(%Client{} = client, list_id, params \\ []) do
-    Stream.resource(
-      fn -> {params, nil, false} end,
-      fn
-        {_params, _cursor, :done} ->
-          {:halt, nil}
-
-        {params, cursor, false} ->
-          req_params = if cursor, do: Keyword.put(params, :cursor, cursor), else: params
-
-          case list(client, list_id, req_params) do
-            {:ok, %{"data" => data, "pagination" => %{"next_cursor" => nil}}} ->
-              {data, {params, nil, :done}}
-
-            {:ok, %{"data" => data, "pagination" => %{"next_cursor" => next}}} ->
-              {data, {params, next, false}}
-
-            {:error, err} ->
-              throw({:attio_stream_error, err})
-          end
-      end,
-      fn _ -> :ok end
-    )
+    Client.paginate(client, &list(client, list_id, &1), params)
   end
 
   @doc """

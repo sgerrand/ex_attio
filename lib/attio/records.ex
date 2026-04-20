@@ -58,28 +58,7 @@ defmodule Attio.Records do
   """
   @spec stream(Client.t(), String.t(), keyword()) :: Enumerable.t()
   def stream(%Client{} = client, object, params \\ []) do
-    Stream.resource(
-      fn -> {params, nil, false} end,
-      fn
-        {_params, _cursor, :done} ->
-          {:halt, nil}
-
-        {params, cursor, false} ->
-          req_params = if cursor, do: Keyword.put(params, :cursor, cursor), else: params
-
-          case list(client, object, req_params) do
-            {:ok, %{"data" => data, "pagination" => %{"next_cursor" => nil}}} ->
-              {data, {params, nil, :done}}
-
-            {:ok, %{"data" => data, "pagination" => %{"next_cursor" => next}}} ->
-              {data, {params, next, false}}
-
-            {:error, err} ->
-              throw({:attio_stream_error, err})
-          end
-      end,
-      fn _ -> :ok end
-    )
+    Client.paginate(client, &list(client, object, &1), params)
   end
 
   @doc """

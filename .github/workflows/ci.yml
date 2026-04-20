@@ -65,5 +65,8 @@ jobs:
       if: ${{ matrix.lint }}
     - name: Compile code
       run: mix compile --warnings-as-errors
+    - name: Run static code analysis
+      run: mix credo --strict
+      if: ${{ matrix.lint }}
     - name: Run tests
       run: mix test --warnings-as-errors

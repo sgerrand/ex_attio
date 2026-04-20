@@ -22,3 +22,6 @@ pre-commit:
     markdownlint:
       glob: "*.md"
       run: markdownlint-cli2 {staged_files}
+    mix-credo:
+      glob: "*.{ex,exs}"
+      run: mix credo --strict

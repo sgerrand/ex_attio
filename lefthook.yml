@@ -1,0 +1,24 @@
+pre-commit:
+  parallel: true
+  commands:
+    mix-format:
+      glob: "*.{ex,exs}"
+      run: mix format --check-formatted
+    actionlint:
+      glob: ".github/workflows/*.yml"
+      run: actionlint {staged_files}
+    check-github-workflows:
+      glob: ".github/workflows/*.yml"
+      run: check-jsonschema --builtin-schema vendor.github-workflows {staged_files}
+    check-dependabot:
+      glob: ".github/dependabot.{yml,yaml}"
+      run: check-jsonschema --builtin-schema vendor.dependabot {staged_files}
+    check-release-please-config:
+      glob: "release-please-config.json"
+      run: check-jsonschema --schemafile https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json {staged_files}
+    check-release-please-manifest:
+      glob: ".release-please-manifest.json"
+      run: check-jsonschema --schemafile https://raw.githubusercontent.com/googleapis/release-please/main/schemas/manifest.json {staged_files}
+    markdownlint:
+      glob: "*.md"
+      run: markdownlint-cli2 {staged_files}

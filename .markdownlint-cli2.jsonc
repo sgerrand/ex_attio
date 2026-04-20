@@ -1,0 +1,10 @@
+{
+  // Exclude generated/vendored directories and files managed by tooling
+  "ignores": ["CHANGELOG.md", ".claude/", "_build/", "deps/"],
+  "config": {
+    // Badge URLs and long code examples exceed 80 chars
+    "MD013": false,
+    // CHANGELOG repeats section names (## Added, ## Fixed) across versions
+    "MD024": false
+  }
+}

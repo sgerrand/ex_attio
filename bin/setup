@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+brew install actionlint check-jsonschema lefthook markdownlint-cli2
+lefthook install

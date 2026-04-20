@@ -6,6 +6,10 @@ defmodule Attio.Threads do
   list entry. Creating a thread also creates its first comment. Use
   `Attio.Comments` to manage individual comments within a thread.
 
+  Threads are immutable after creation: the API provides no update or delete
+  operations on threads themselves. To add further comments to an existing
+  thread, use `Attio.Comments`.
+
   Requires the `comment:read` scope for read operations and
   `comment:read-write` for mutations.
   """

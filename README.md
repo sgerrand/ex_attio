@@ -88,3 +88,7 @@ mix docs
 ```
 
 Open `doc/index.html` in a browser to preview the generated site.
+
+## License
+
+Attio is [released under the BSD 2-Clause license](LICENSE).

@@ -1,5 +1,10 @@
 # Attio
 
+[![Test Status](https://github.com/sgerrand/ex_attio/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sgerrand/ex_attio/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/sgerrand/ex_attio/badge.svg?branch=main)](https://coveralls.io/github/sgerrand/ex_attio?branch=main)
+[![Hex Version](https://img.shields.io/hexpm/v/attio.svg)](https://hex.pm/packages/attio)
+[![Hex Docs](https://img.shields.io/badge/docs-hexpm-blue.svg)](https://hexdocs.pm/attio/)
+
 An Elixir client for the [Attio REST API](https://developers.attio.com).
 
 ## Installation

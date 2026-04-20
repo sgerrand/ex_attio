@@ -30,6 +30,22 @@ defmodule Attio.ListsTest do
 
       assert {:ok, %{"data" => %{"api_slug" => "pipeline"}}} = Attio.Lists.get(client, "pipeline")
     end
+
+    test "returns an error when the list does not exist", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        conn
+        |> Plug.Conn.put_status(404)
+        |> Req.Test.json(%{
+          "status_code" => 404,
+          "type" => "not_found",
+          "code" => "list_not_found",
+          "message" => "List not found."
+        })
+      end)
+
+      assert {:error, %Attio.Error{status: 404, code: "list_not_found"}} =
+               Attio.Lists.get(client, "nonexistent")
+    end
   end
 
   describe "create/2" do

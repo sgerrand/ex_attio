@@ -12,21 +12,41 @@ defmodule Attio.WorkspaceMembersTest do
     %{client: client}
   end
 
-  test "list/1 returns all workspace members", %{client: client} do
-    Req.Test.stub(__MODULE__, fn conn ->
-      Req.Test.json(conn, %{"data" => [@member]})
-    end)
+  describe "list/1" do
+    test "returns all workspace members", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Req.Test.json(conn, %{"data" => [@member]})
+      end)
 
-    assert {:ok, %{"data" => [%{"name" => "Alice Smith"}]}} =
-             Attio.WorkspaceMembers.list(client)
+      assert {:ok, %{"data" => [%{"name" => "Alice Smith"}]}} =
+               Attio.WorkspaceMembers.list(client)
+    end
   end
 
-  test "get/2 returns a single workspace member", %{client: client} do
-    Req.Test.stub(__MODULE__, fn conn ->
-      Req.Test.json(conn, %{"data" => @member})
-    end)
+  describe "get/2" do
+    test "returns a single workspace member", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Req.Test.json(conn, %{"data" => @member})
+      end)
 
-    assert {:ok, %{"data" => %{"email_address" => "alice@example.com"}}} =
-             Attio.WorkspaceMembers.get(client, "wm1")
+      assert {:ok, %{"data" => %{"email_address" => "alice@example.com"}}} =
+               Attio.WorkspaceMembers.get(client, "wm1")
+    end
+
+    test "returns an error when the member does not exist", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        conn
+        |> Plug.Conn.put_status(404)
+        |> Req.Test.json(%{
+          "status_code" => 404,
+          "type" => "not_found",
+          "code" => "workspace_member_not_found",
+          "message" => "Workspace member not found."
+        })
+      end)
+
+      assert {:error, %Attio.Error{status: 404, code: "workspace_member_not_found"}} =
+               Attio.WorkspaceMembers.get(client, "nonexistent")
+    end
   end
 end

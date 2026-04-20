@@ -53,5 +53,17 @@ defmodule Attio.ClientTest do
       assert {:error, %Attio.Error{status: 500, type: "unknown_error"}} =
                Attio.Client.request(client, :get, "/v2/meta/token")
     end
+
+    test "returns transport exception on connection error" do
+      error = %Req.TransportError{reason: :econnrefused}
+
+      req =
+        Req.new(base_url: "http://localhost", retry: false)
+        |> Req.Request.prepend_request_steps(inject_error: fn req -> {req, error} end)
+
+      client = %Attio.Client{req: req}
+
+      assert {:error, ^error} = Attio.Client.request(client, :get, "/v2/meta/token")
+    end
   end
 end

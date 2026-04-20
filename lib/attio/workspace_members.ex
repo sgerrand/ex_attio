@@ -8,8 +8,6 @@ defmodule Attio.WorkspaceMembers do
 
   alias Attio.Client
 
-  defp encode(id), do: URI.encode(id, &URI.char_unreserved?/1)
-
   @doc """
   Lists all workspace members.
   """
@@ -23,6 +21,6 @@ defmodule Attio.WorkspaceMembers do
   """
   @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def get(%Client{} = client, member_id) do
-    Client.request(client, :get, "/v2/workspace-members/#{encode(member_id)}")
+    Client.request(client, :get, "/v2/workspace-members/#{Client.encode(member_id)}")
   end
 end

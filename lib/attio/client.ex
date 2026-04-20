@@ -26,6 +26,10 @@ defmodule Attio.Client do
 
   @base_url "https://api.attio.com"
 
+  @doc false
+  @spec encode(String.t()) :: String.t()
+  def encode(id), do: URI.encode(id, &URI.char_unreserved?/1)
+
   @doc """
   Creates a new client.
 

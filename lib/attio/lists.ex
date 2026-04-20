@@ -11,8 +11,6 @@ defmodule Attio.Lists do
 
   alias Attio.Client
 
-  defp encode(id), do: URI.encode(id, &URI.char_unreserved?/1)
-
   @doc """
   Lists all lists in the workspace.
   """
@@ -26,7 +24,7 @@ defmodule Attio.Lists do
   """
   @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def get(%Client{} = client, list_id) do
-    Client.request(client, :get, "/v2/lists/#{encode(list_id)}")
+    Client.request(client, :get, "/v2/lists/#{Client.encode(list_id)}")
   end
 
   @doc """
@@ -48,7 +46,9 @@ defmodule Attio.Lists do
   """
   @spec update(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
   def update(%Client{} = client, list_id, attrs) when is_map(attrs) do
-    Client.request(client, :patch, "/v2/lists/#{encode(list_id)}", json: %{"data" => attrs})
+    Client.request(client, :patch, "/v2/lists/#{Client.encode(list_id)}",
+      json: %{"data" => attrs}
+    )
   end
 
   @doc """
@@ -56,6 +56,6 @@ defmodule Attio.Lists do
   """
   @spec list_views(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def list_views(%Client{} = client, list_id) do
-    Client.request(client, :get, "/v2/lists/#{encode(list_id)}/views")
+    Client.request(client, :get, "/v2/lists/#{Client.encode(list_id)}/views")
   end
 end

@@ -12,8 +12,6 @@ defmodule Attio.Threads do
 
   alias Attio.Client
 
-  defp encode(id), do: URI.encode(id, &URI.char_unreserved?/1)
-
   @doc """
   Lists threads. Returns one page.
 
@@ -32,7 +30,7 @@ defmodule Attio.Threads do
   """
   @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def get(%Client{} = client, thread_id) do
-    Client.request(client, :get, "/v2/threads/#{encode(thread_id)}")
+    Client.request(client, :get, "/v2/threads/#{Client.encode(thread_id)}")
   end
 
   @doc """

@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Tests (Elixir ${{ matrix.elixir }} / OTP ${{ matrix.otp }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        otp: ['25', '26', '27', '28']
+        elixir: ['1.17', '1.18', '1.19']
+        exclude:
+          - { elixir: '1.17', otp: '28' }
+          - { elixir: '1.18', otp: '28' }
+          - { elixir: '1.19', otp: '25' }
+        include:
+          - elixir: '1.19'
+            otp: '28'
+            lint: true
+
+    env:
+      MIX_ENV: test
+
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        persist-credentials: false
+    - name: Set up Elixir
+      uses: erlef/setup-beam@fc68ffb90438ef2936bbb3251622353b3dcb2f93 # v1.24.0
+      with:
+        elixir-version: ${{matrix.elixir}}
+        otp-version: ${{matrix.otp}}
+    - name: Cache dependencies
+      id: cache-deps
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      with:
+        path: |
+          _build
+          deps
+        key: ${{ runner.os }}-mix-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
+        restore-keys: ${{ runner.os }}-mix-${{ matrix.otp }}-${{ matrix.elixir }}-
+    - name: Install and compile dependencies
+      if: steps.cache-deps.outputs.cache-hit != 'true'
+      run: |
+        # shellcheck disable=SC1010
+        mix do deps.get, deps.compile
+    - name: Check that mix.lock is up to date
+      run: mix deps.get --check-locked
+      if: ${{ matrix.lint }}
+    - name: Check that files are formatted
+      run: mix format --check-formatted
+      if: ${{ matrix.lint }}
+    - name: Check for unused dependencies
+      run: mix deps.unlock --check-unused
+      if: ${{ matrix.lint }}
+    - name: Compile code
+      run: mix compile --warnings-as-errors
+    - name: Run tests
+      run: mix test --warnings-as-errors

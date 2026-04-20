@@ -37,6 +37,8 @@ defmodule Attio.Records do
 
   alias Attio.Client
 
+  defp encode(id), do: URI.encode(id, &URI.char_unreserved?/1)
+
   @doc """
   Lists records for an object. Returns one page.
 
@@ -47,7 +49,7 @@ defmodule Attio.Records do
   """
   @spec list(Client.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def list(%Client{} = client, object, params \\ []) do
-    Client.request(client, :get, "/v2/objects/#{object}/records", params: params)
+    Client.request(client, :get, "/v2/objects/#{encode(object)}/records", params: params)
   end
 
   @doc """
@@ -66,7 +68,7 @@ defmodule Attio.Records do
   """
   @spec get(Client.t(), String.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def get(%Client{} = client, object, record) do
-    Client.request(client, :get, "/v2/objects/#{object}/records/#{record}")
+    Client.request(client, :get, "/v2/objects/#{encode(object)}/records/#{encode(record)}")
   end
 
   @doc """
@@ -82,7 +84,7 @@ defmodule Attio.Records do
   """
   @spec create(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
   def create(%Client{} = client, object, values) when is_map(values) do
-    Client.request(client, :post, "/v2/objects/#{object}/records",
+    Client.request(client, :post, "/v2/objects/#{encode(object)}/records",
       json: %{"data" => %{"values" => values}}
     )
   end
@@ -94,7 +96,7 @@ defmodule Attio.Records do
   """
   @spec update(Client.t(), String.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
   def update(%Client{} = client, object, record, values) when is_map(values) do
-    Client.request(client, :patch, "/v2/objects/#{object}/records/#{record}",
+    Client.request(client, :patch, "/v2/objects/#{encode(object)}/records/#{encode(record)}",
       json: %{"data" => %{"values" => values}}
     )
   end
@@ -104,7 +106,7 @@ defmodule Attio.Records do
   """
   @spec delete(Client.t(), String.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def delete(%Client{} = client, object, record) do
-    Client.request(client, :delete, "/v2/objects/#{object}/records/#{record}")
+    Client.request(client, :delete, "/v2/objects/#{encode(object)}/records/#{encode(record)}")
   end
 
   @doc """
@@ -125,7 +127,7 @@ defmodule Attio.Records do
   """
   @spec assert(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
   def assert(%Client{} = client, object, values) when is_map(values) do
-    Client.request(client, :post, "/v2/objects/#{object}/records/assert",
+    Client.request(client, :post, "/v2/objects/#{encode(object)}/records/assert",
       json: %{"data" => %{"values" => values}}
     )
   end

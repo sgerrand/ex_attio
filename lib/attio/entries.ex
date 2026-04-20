@@ -21,6 +21,8 @@ defmodule Attio.Entries do
 
   alias Attio.Client
 
+  defp encode(id), do: URI.encode(id, &URI.char_unreserved?/1)
+
   @doc """
   Lists entries in a list. Returns one page.
 
@@ -31,7 +33,7 @@ defmodule Attio.Entries do
   """
   @spec list(Client.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def list(%Client{} = client, list_id, params \\ []) do
-    Client.request(client, :get, "/v2/lists/#{list_id}/entries", params: params)
+    Client.request(client, :get, "/v2/lists/#{encode(list_id)}/entries", params: params)
   end
 
   @doc """
@@ -50,7 +52,7 @@ defmodule Attio.Entries do
   """
   @spec get(Client.t(), String.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def get(%Client{} = client, list_id, entry_id) do
-    Client.request(client, :get, "/v2/lists/#{list_id}/entries/#{entry_id}")
+    Client.request(client, :get, "/v2/lists/#{encode(list_id)}/entries/#{encode(entry_id)}")
   end
 
   @doc """
@@ -63,7 +65,9 @@ defmodule Attio.Entries do
   """
   @spec create(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
   def create(%Client{} = client, list_id, attrs) when is_map(attrs) do
-    Client.request(client, :post, "/v2/lists/#{list_id}/entries", json: %{"data" => attrs})
+    Client.request(client, :post, "/v2/lists/#{encode(list_id)}/entries",
+      json: %{"data" => attrs}
+    )
   end
 
   @doc """
@@ -71,7 +75,7 @@ defmodule Attio.Entries do
   """
   @spec update(Client.t(), String.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
   def update(%Client{} = client, list_id, entry_id, attrs) when is_map(attrs) do
-    Client.request(client, :patch, "/v2/lists/#{list_id}/entries/#{entry_id}",
+    Client.request(client, :patch, "/v2/lists/#{encode(list_id)}/entries/#{encode(entry_id)}",
       json: %{"data" => attrs}
     )
   end
@@ -81,6 +85,6 @@ defmodule Attio.Entries do
   """
   @spec delete(Client.t(), String.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def delete(%Client{} = client, list_id, entry_id) do
-    Client.request(client, :delete, "/v2/lists/#{list_id}/entries/#{entry_id}")
+    Client.request(client, :delete, "/v2/lists/#{encode(list_id)}/entries/#{encode(entry_id)}")
   end
 end

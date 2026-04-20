@@ -11,12 +11,14 @@ defmodule Attio.Comments do
 
   alias Attio.Client
 
+  defp encode(id), do: URI.encode(id, &URI.char_unreserved?/1)
+
   @doc """
   Gets a single comment by its ID.
   """
   @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def get(%Client{} = client, comment_id) do
-    Client.request(client, :get, "/v2/comments/#{comment_id}")
+    Client.request(client, :get, "/v2/comments/#{encode(comment_id)}")
   end
 
   @doc """
@@ -24,7 +26,7 @@ defmodule Attio.Comments do
   """
   @spec update(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
   def update(%Client{} = client, comment_id, attrs) when is_map(attrs) do
-    Client.request(client, :patch, "/v2/comments/#{comment_id}", json: %{"data" => attrs})
+    Client.request(client, :patch, "/v2/comments/#{encode(comment_id)}", json: %{"data" => attrs})
   end
 
   @doc """
@@ -32,6 +34,6 @@ defmodule Attio.Comments do
   """
   @spec delete(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def delete(%Client{} = client, comment_id) do
-    Client.request(client, :delete, "/v2/comments/#{comment_id}")
+    Client.request(client, :delete, "/v2/comments/#{encode(comment_id)}")
   end
 end

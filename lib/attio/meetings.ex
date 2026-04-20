@@ -9,6 +9,8 @@ defmodule Attio.Meetings do
 
   alias Attio.Client
 
+  defp encode(id), do: URI.encode(id, &URI.char_unreserved?/1)
+
   @doc """
   Lists meetings. Returns one page.
 
@@ -27,7 +29,7 @@ defmodule Attio.Meetings do
   """
   @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def get(%Client{} = client, meeting_id) do
-    Client.request(client, :get, "/v2/meetings/#{meeting_id}")
+    Client.request(client, :get, "/v2/meetings/#{encode(meeting_id)}")
   end
 
   @doc """
@@ -50,7 +52,7 @@ defmodule Attio.Meetings do
   """
   @spec update(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
   def update(%Client{} = client, meeting_id, attrs) when is_map(attrs) do
-    Client.request(client, :patch, "/v2/meetings/#{meeting_id}", json: %{"data" => attrs})
+    Client.request(client, :patch, "/v2/meetings/#{encode(meeting_id)}", json: %{"data" => attrs})
   end
 
   @doc """
@@ -58,6 +60,6 @@ defmodule Attio.Meetings do
   """
   @spec delete(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def delete(%Client{} = client, meeting_id) do
-    Client.request(client, :delete, "/v2/meetings/#{meeting_id}")
+    Client.request(client, :delete, "/v2/meetings/#{encode(meeting_id)}")
   end
 end

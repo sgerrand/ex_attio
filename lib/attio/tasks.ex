@@ -9,6 +9,8 @@ defmodule Attio.Tasks do
 
   alias Attio.Client
 
+  defp encode(id), do: URI.encode(id, &URI.char_unreserved?/1)
+
   @doc """
   Lists tasks. Returns one page.
 
@@ -27,7 +29,7 @@ defmodule Attio.Tasks do
   """
   @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def get(%Client{} = client, task_id) do
-    Client.request(client, :get, "/v2/tasks/#{task_id}")
+    Client.request(client, :get, "/v2/tasks/#{encode(task_id)}")
   end
 
   @doc """
@@ -54,7 +56,7 @@ defmodule Attio.Tasks do
   """
   @spec update(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
   def update(%Client{} = client, task_id, attrs) when is_map(attrs) do
-    Client.request(client, :patch, "/v2/tasks/#{task_id}", json: %{"data" => attrs})
+    Client.request(client, :patch, "/v2/tasks/#{encode(task_id)}", json: %{"data" => attrs})
   end
 
   @doc """
@@ -62,6 +64,6 @@ defmodule Attio.Tasks do
   """
   @spec delete(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def delete(%Client{} = client, task_id) do
-    Client.request(client, :delete, "/v2/tasks/#{task_id}")
+    Client.request(client, :delete, "/v2/tasks/#{encode(task_id)}")
   end
 end

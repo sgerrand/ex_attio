@@ -9,6 +9,8 @@ defmodule Attio.Webhooks do
 
   alias Attio.Client
 
+  defp encode(id), do: URI.encode(id, &URI.char_unreserved?/1)
+
   @doc """
   Lists all webhooks in the workspace.
   """
@@ -22,7 +24,7 @@ defmodule Attio.Webhooks do
   """
   @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def get(%Client{} = client, webhook_id) do
-    Client.request(client, :get, "/v2/webhooks/#{webhook_id}")
+    Client.request(client, :get, "/v2/webhooks/#{encode(webhook_id)}")
   end
 
   @doc """
@@ -55,7 +57,7 @@ defmodule Attio.Webhooks do
   """
   @spec update(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
   def update(%Client{} = client, webhook_id, attrs) when is_map(attrs) do
-    Client.request(client, :patch, "/v2/webhooks/#{webhook_id}", json: %{"data" => attrs})
+    Client.request(client, :patch, "/v2/webhooks/#{encode(webhook_id)}", json: %{"data" => attrs})
   end
 
   @doc """
@@ -63,6 +65,6 @@ defmodule Attio.Webhooks do
   """
   @spec delete(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def delete(%Client{} = client, webhook_id) do
-    Client.request(client, :delete, "/v2/webhooks/#{webhook_id}")
+    Client.request(client, :delete, "/v2/webhooks/#{encode(webhook_id)}")
   end
 end

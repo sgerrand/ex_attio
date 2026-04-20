@@ -8,6 +8,8 @@ defmodule Attio.Notes do
 
   alias Attio.Client
 
+  defp encode(id), do: URI.encode(id, &URI.char_unreserved?/1)
+
   @doc """
   Lists notes. Returns one page.
 
@@ -26,7 +28,7 @@ defmodule Attio.Notes do
   """
   @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def get(%Client{} = client, note_id) do
-    Client.request(client, :get, "/v2/notes/#{note_id}")
+    Client.request(client, :get, "/v2/notes/#{encode(note_id)}")
   end
 
   @doc """
@@ -50,7 +52,7 @@ defmodule Attio.Notes do
   """
   @spec update(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
   def update(%Client{} = client, note_id, attrs) when is_map(attrs) do
-    Client.request(client, :patch, "/v2/notes/#{note_id}", json: %{"data" => attrs})
+    Client.request(client, :patch, "/v2/notes/#{encode(note_id)}", json: %{"data" => attrs})
   end
 
   @doc """
@@ -58,6 +60,6 @@ defmodule Attio.Notes do
   """
   @spec delete(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def delete(%Client{} = client, note_id) do
-    Client.request(client, :delete, "/v2/notes/#{note_id}")
+    Client.request(client, :delete, "/v2/notes/#{encode(note_id)}")
   end
 end

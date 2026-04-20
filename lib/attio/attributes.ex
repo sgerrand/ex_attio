@@ -24,6 +24,8 @@ defmodule Attio.Attributes do
 
   @type target :: :objects | :lists
 
+  defp encode(id), do: URI.encode(id, &URI.char_unreserved?/1)
+
   @doc """
   Lists attributes on an object or list.
 
@@ -39,7 +41,7 @@ defmodule Attio.Attributes do
   """
   @spec list(Client.t(), target(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def list(%Client{} = client, target, identifier, params \\ []) do
-    Client.request(client, :get, "/v2/#{target}/#{identifier}/attributes", params: params)
+    Client.request(client, :get, "/v2/#{target}/#{encode(identifier)}/attributes", params: params)
   end
 
   @doc """
@@ -65,7 +67,7 @@ defmodule Attio.Attributes do
   """
   @spec create(Client.t(), target(), String.t(), map()) :: {:ok, map()} | {:error, term()}
   def create(%Client{} = client, target, identifier, attrs) when is_map(attrs) do
-    Client.request(client, :post, "/v2/#{target}/#{identifier}/attributes",
+    Client.request(client, :post, "/v2/#{target}/#{encode(identifier)}/attributes",
       json: %{"data" => attrs}
     )
   end

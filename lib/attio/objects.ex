@@ -11,6 +11,8 @@ defmodule Attio.Objects do
 
   alias Attio.Client
 
+  defp encode(id), do: URI.encode(id, &URI.char_unreserved?/1)
+
   @doc """
   Lists all objects in the workspace.
   """
@@ -30,7 +32,7 @@ defmodule Attio.Objects do
   """
   @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def get(%Client{} = client, object) do
-    Client.request(client, :get, "/v2/objects/#{object}")
+    Client.request(client, :get, "/v2/objects/#{encode(object)}")
   end
 
   @doc """
@@ -53,7 +55,7 @@ defmodule Attio.Objects do
   """
   @spec update(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
   def update(%Client{} = client, object, attrs) when is_map(attrs) do
-    Client.request(client, :patch, "/v2/objects/#{object}", json: %{"data" => attrs})
+    Client.request(client, :patch, "/v2/objects/#{encode(object)}", json: %{"data" => attrs})
   end
 
   @doc """
@@ -61,6 +63,6 @@ defmodule Attio.Objects do
   """
   @spec list_views(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
   def list_views(%Client{} = client, object) do
-    Client.request(client, :get, "/v2/objects/#{object}/views")
+    Client.request(client, :get, "/v2/objects/#{encode(object)}/views")
   end
 end

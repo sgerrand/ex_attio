@@ -10,18 +10,13 @@ defmodule Attio.Entries do
 
   ## Pagination
 
-  `list/3` returns a single page. `stream/3` lazily pages through all entries
-  without buffering them in memory:
+  `list/3` returns a single page. `stream/3` lazily pages through all entries;
+  `stream_all/3` collects them into `{:ok, list}`. See `Attio` for an overview.
 
       client
       |> Attio.Entries.stream("pipeline")
       |> Stream.filter(fn e -> e["values"]["stage"] == "qualified" end)
       |> Enum.to_list()
-
-  If you want a plain `{:ok, list}` result rather than a lazy stream, use
-  `stream_all/3`:
-
-      {:ok, entries} = Attio.Entries.stream_all(client, "pipeline")
 
   """
 

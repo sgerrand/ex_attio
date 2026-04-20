@@ -7,18 +7,13 @@ defmodule Attio.Notes do
 
   ## Pagination
 
-  `list/2` returns a single page. `stream/2` lazily pages through all notes
-  without buffering them in memory:
+  `list/2` returns a single page. `stream/2` lazily pages through all notes;
+  `stream_all/2` collects them into `{:ok, list}`. See `Attio` for an overview.
 
       client
       |> Attio.Notes.stream(limit: 100)
       |> Stream.filter(fn n -> n["title"] =~ "recap" end)
       |> Enum.to_list()
-
-  If you want a plain `{:ok, list}` result rather than a lazy stream, use
-  `stream_all/2`:
-
-      {:ok, notes} = Attio.Notes.stream_all(client)
 
   """
 

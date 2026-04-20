@@ -15,17 +15,12 @@ defmodule Attio.Threads do
 
   ## Pagination
 
-  `list/2` returns a single page. `stream/2` lazily pages through all threads
-  without buffering them in memory:
+  `list/2` returns a single page. `stream/2` lazily pages through all threads;
+  `stream_all/2` collects them into `{:ok, list}`. See `Attio` for an overview.
 
       client
       |> Attio.Threads.stream()
       |> Enum.to_list()
-
-  If you want a plain `{:ok, list}` result rather than a lazy stream, use
-  `stream_all/2`:
-
-      {:ok, threads} = Attio.Threads.stream_all(client)
 
   """
 

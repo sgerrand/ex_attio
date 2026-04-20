@@ -8,18 +8,13 @@ defmodule Attio.Meetings do
 
   ## Pagination
 
-  `list/2` returns a single page. `stream/2` lazily pages through all meetings
-  without buffering them in memory:
+  `list/2` returns a single page. `stream/2` lazily pages through all meetings;
+  `stream_all/2` collects them into `{:ok, list}`. See `Attio` for an overview.
 
       client
       |> Attio.Meetings.stream()
       |> Stream.filter(fn m -> m["title"] =~ "intro" end)
       |> Enum.to_list()
-
-  If you want a plain `{:ok, list}` result rather than a lazy stream, use
-  `stream_all/2`:
-
-      {:ok, meetings} = Attio.Meetings.stream_all(client)
 
   """
 

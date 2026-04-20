@@ -83,11 +83,9 @@ defmodule Attio.Records do
   @spec stream_all(Client.t(), String.t(), keyword()) ::
           {:ok, [map()]} | {:error, Attio.Error.t() | Exception.t()}
   def stream_all(%Client{} = client, object, params \\ []) do
-    try do
-      {:ok, stream(client, object, params) |> Enum.to_list()}
-    catch
-      {:attio_stream_error, err} -> {:error, err}
-    end
+    {:ok, stream(client, object, params) |> Enum.to_list()}
+  catch
+    {:attio_stream_error, err} -> {:error, err}
   end
 
   @doc """

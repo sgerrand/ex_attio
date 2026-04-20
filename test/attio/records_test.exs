@@ -103,6 +103,61 @@ defmodule Attio.RecordsTest do
     end
   end
 
+  describe "stream_all/3" do
+    test "returns {:ok, list} with all records across pages", %{client: client} do
+      record2 = put_in(@record, ["id", "record_id"], "r2")
+
+      Req.Test.stub(__MODULE__, fn conn ->
+        params = URI.decode_query(conn.query_string)
+
+        case params["cursor"] do
+          nil ->
+            Req.Test.json(conn, %{
+              "data" => [@record],
+              "pagination" => %{"next_cursor" => "cursor_page2"}
+            })
+
+          "cursor_page2" ->
+            Req.Test.json(conn, %{
+              "data" => [record2],
+              "pagination" => %{"next_cursor" => nil}
+            })
+        end
+      end)
+
+      assert {:ok, records} = Attio.Records.stream_all(client, "people")
+      assert length(records) == 2
+      assert Enum.map(records, &get_in(&1, ["id", "record_id"])) == ["r1", "r2"]
+    end
+
+    test "returns {:error, reason} on API failure mid-stream", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        params = URI.decode_query(conn.query_string)
+
+        case params["cursor"] do
+          nil ->
+            Req.Test.json(conn, %{
+              "data" => [@record],
+              "pagination" => %{"next_cursor" => "cursor_page2"}
+            })
+
+          "cursor_page2" ->
+            conn
+            |> Plug.Conn.put_status(500)
+            |> Req.Test.json(%{
+              "status_code" => 500,
+              "type" => "api_error",
+              "code" => "internal_server_error",
+              "message" => "An unexpected error occurred."
+            })
+        end
+      end)
+
+      assert {:error, %Attio.Error{status: 500, code: "internal_server_error"}} =
+               Attio.Records.stream_all(client, "people")
+    end
+  end
+
   describe "get/3" do
     test "returns a single record", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->

@@ -79,6 +79,61 @@ defmodule Attio.EntriesTest do
     end
   end
 
+  describe "stream_all/3" do
+    test "returns {:ok, list} with all entries across pages", %{client: client} do
+      entry2 = put_in(@entry, ["id", "entry_id"], "e2")
+
+      Req.Test.stub(__MODULE__, fn conn ->
+        params = URI.decode_query(conn.query_string)
+
+        case params["cursor"] do
+          nil ->
+            Req.Test.json(conn, %{
+              "data" => [@entry],
+              "pagination" => %{"next_cursor" => "cursor_page2"}
+            })
+
+          "cursor_page2" ->
+            Req.Test.json(conn, %{
+              "data" => [entry2],
+              "pagination" => %{"next_cursor" => nil}
+            })
+        end
+      end)
+
+      assert {:ok, entries} = Attio.Entries.stream_all(client, "pipeline")
+      assert length(entries) == 2
+      assert Enum.map(entries, &get_in(&1, ["id", "entry_id"])) == ["e1", "e2"]
+    end
+
+    test "returns {:error, reason} on API failure mid-stream", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        params = URI.decode_query(conn.query_string)
+
+        case params["cursor"] do
+          nil ->
+            Req.Test.json(conn, %{
+              "data" => [@entry],
+              "pagination" => %{"next_cursor" => "cursor_page2"}
+            })
+
+          "cursor_page2" ->
+            conn
+            |> Plug.Conn.put_status(403)
+            |> Req.Test.json(%{
+              "status_code" => 403,
+              "type" => "authentication_error",
+              "code" => "forbidden",
+              "message" => "Insufficient permissions."
+            })
+        end
+      end)
+
+      assert {:error, %Attio.Error{status: 403, code: "forbidden"}} =
+               Attio.Entries.stream_all(client, "pipeline")
+    end
+  end
+
   describe "get/3" do
     test "returns a single entry", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->

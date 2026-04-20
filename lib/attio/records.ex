@@ -13,13 +13,19 @@ defmodule Attio.Records do
 
   ## Pagination
 
-  `list/3` returns a single page. Use `stream/3` to lazily page through all
-  records without loading them into memory at once:
+  `list/3` returns a single page. `stream/3` lazily pages through all records
+  without buffering them in memory — compose it with `Stream` functions before
+  calling `Enum.to_list/1` or similar to collect results:
 
       client
       |> Attio.Records.stream("people", limit: 100)
       |> Stream.filter(fn r -> r["values"]["email_addresses"] != [] end)
       |> Enum.to_list()
+
+  If you want a plain `{:ok, list}` result rather than a lazy stream, use
+  `stream_all/3`:
+
+      {:ok, records} = Attio.Records.stream_all(client, "people")
 
   ## Attribute values
 
@@ -54,11 +60,34 @@ defmodule Attio.Records do
   Returns a lazy stream of all records across all pages.
 
   Accepts the same options as `list/3`. Raises `{:attio_stream_error, error}`
-  on API failure mid-stream.
+  on API failure mid-stream. Use `stream_all/3` if you prefer a standard
+  `{:ok, list} | {:error, term()}` return value.
   """
   @spec stream(Client.t(), String.t(), keyword()) :: Enumerable.t()
   def stream(%Client{} = client, object, params \\ []) do
     Client.paginate(client, &list(client, object, &1), params)
+  end
+
+  @doc """
+  Fetches all records across all pages and returns them as a list.
+
+  Accepts the same options as `list/3`. Returns `{:ok, [map()]}` on success
+  or `{:error, term()}` if any page request fails. Unlike `stream/3`, the
+  entire result set is loaded into memory.
+
+  ## Example
+
+      {:ok, records} = Attio.Records.stream_all(client, "people")
+
+  """
+  @spec stream_all(Client.t(), String.t(), keyword()) ::
+          {:ok, [map()]} | {:error, Attio.Error.t() | Exception.t()}
+  def stream_all(%Client{} = client, object, params \\ []) do
+    try do
+      {:ok, stream(client, object, params) |> Enum.to_list()}
+    catch
+      {:attio_stream_error, err} -> {:error, err}
+    end
   end
 
   @doc """

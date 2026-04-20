@@ -10,12 +10,18 @@ defmodule Attio.Entries do
 
   ## Pagination
 
-  `list/3` returns a single page. Use `stream/3` to lazily consume all entries:
+  `list/3` returns a single page. `stream/3` lazily pages through all entries
+  without buffering them in memory:
 
       client
       |> Attio.Entries.stream("pipeline")
       |> Stream.filter(fn e -> e["values"]["stage"] == "qualified" end)
       |> Enum.to_list()
+
+  If you want a plain `{:ok, list}` result rather than a lazy stream, use
+  `stream_all/3`:
+
+      {:ok, entries} = Attio.Entries.stream_all(client, "pipeline")
 
   """
 
@@ -38,11 +44,34 @@ defmodule Attio.Entries do
   Returns a lazy stream of all entries in a list across all pages.
 
   Accepts the same options as `list/3`. Raises `{:attio_stream_error, error}`
-  on API failure mid-stream.
+  on API failure mid-stream. Use `stream_all/3` if you prefer a standard
+  `{:ok, list} | {:error, term()}` return value.
   """
   @spec stream(Client.t(), String.t(), keyword()) :: Enumerable.t()
   def stream(%Client{} = client, list_id, params \\ []) do
     Client.paginate(client, &list(client, list_id, &1), params)
+  end
+
+  @doc """
+  Fetches all entries in a list across all pages and returns them as a list.
+
+  Accepts the same options as `list/3`. Returns `{:ok, [map()]}` on success
+  or `{:error, term()}` if any page request fails. Unlike `stream/3`, the
+  entire result set is loaded into memory.
+
+  ## Example
+
+      {:ok, entries} = Attio.Entries.stream_all(client, "pipeline")
+
+  """
+  @spec stream_all(Client.t(), String.t(), keyword()) ::
+          {:ok, [map()]} | {:error, Attio.Error.t() | Exception.t()}
+  def stream_all(%Client{} = client, list_id, params \\ []) do
+    try do
+      {:ok, stream(client, list_id, params) |> Enum.to_list()}
+    catch
+      {:attio_stream_error, err} -> {:error, err}
+    end
   end
 
   @doc """

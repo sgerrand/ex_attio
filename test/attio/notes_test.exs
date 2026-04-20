@@ -120,50 +120,60 @@ defmodule Attio.NotesTest do
     end
   end
 
-  test "list/2 returns a page of notes", %{client: client} do
-    Req.Test.stub(__MODULE__, fn conn ->
-      Req.Test.json(conn, %{"data" => [@note], "pagination" => %{"next_cursor" => nil}})
-    end)
+  describe "list/2" do
+    test "returns a page of notes", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Req.Test.json(conn, %{"data" => [@note], "pagination" => %{"next_cursor" => nil}})
+      end)
 
-    assert {:ok, %{"data" => [%{"title" => "Meeting recap"}]}} = Attio.Notes.list(client)
+      assert {:ok, %{"data" => [%{"title" => "Meeting recap"}]}} = Attio.Notes.list(client)
+    end
   end
 
-  test "get/2 returns a single note", %{client: client} do
-    Req.Test.stub(__MODULE__, fn conn ->
-      Req.Test.json(conn, %{"data" => @note})
-    end)
+  describe "get/2" do
+    test "returns a single note", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Req.Test.json(conn, %{"data" => @note})
+      end)
 
-    assert {:ok, %{"data" => %{"id" => %{"note_id" => "n1"}}}} = Attio.Notes.get(client, "n1")
+      assert {:ok, %{"data" => %{"id" => %{"note_id" => "n1"}}}} = Attio.Notes.get(client, "n1")
+    end
   end
 
-  test "create/2 creates a note", %{client: client} do
-    Req.Test.stub(__MODULE__, fn conn ->
-      Req.Test.json(conn, %{"data" => @note})
-    end)
+  describe "create/2" do
+    test "creates a note", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Req.Test.json(conn, %{"data" => @note})
+      end)
 
-    assert {:ok, %{"data" => _}} =
-             Attio.Notes.create(client, %{
-               "parent_object" => "people",
-               "parent_record_id" => "r1",
-               "title" => "Meeting recap",
-               "content" => %{"type" => "doc", "content" => []}
-             })
+      assert {:ok, %{"data" => _}} =
+               Attio.Notes.create(client, %{
+                 "parent_object" => "people",
+                 "parent_record_id" => "r1",
+                 "title" => "Meeting recap",
+                 "content" => %{"type" => "doc", "content" => []}
+               })
+    end
   end
 
-  test "update/3 updates a note", %{client: client} do
-    Req.Test.stub(__MODULE__, fn conn ->
-      Req.Test.json(conn, %{"data" => Map.put(@note, "title", "Updated title")})
-    end)
+  describe "update/3" do
+    test "updates a note", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Req.Test.json(conn, %{"data" => Map.put(@note, "title", "Updated title")})
+      end)
 
-    assert {:ok, %{"data" => %{"title" => "Updated title"}}} =
-             Attio.Notes.update(client, "n1", %{"title" => "Updated title"})
+      assert {:ok, %{"data" => %{"title" => "Updated title"}}} =
+               Attio.Notes.update(client, "n1", %{"title" => "Updated title"})
+    end
   end
 
-  test "delete/2 deletes a note", %{client: client} do
-    Req.Test.stub(__MODULE__, fn conn ->
-      Req.Test.json(conn, %{})
-    end)
+  describe "delete/2" do
+    test "deletes a note", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Req.Test.json(conn, %{})
+      end)
 
-    assert {:ok, _} = Attio.Notes.delete(client, "n1")
+      assert {:ok, _} = Attio.Notes.delete(client, "n1")
+    end
   end
 end

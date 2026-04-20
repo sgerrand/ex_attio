@@ -121,48 +121,59 @@ defmodule Attio.TasksTest do
     end
   end
 
-  test "list/2 returns a page of tasks", %{client: client} do
-    Req.Test.stub(__MODULE__, fn conn ->
-      Req.Test.json(conn, %{"data" => [@task], "pagination" => %{"next_cursor" => nil}})
-    end)
+  describe "list/2" do
+    test "returns a page of tasks", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Req.Test.json(conn, %{"data" => [@task], "pagination" => %{"next_cursor" => nil}})
+      end)
 
-    assert {:ok, %{"data" => [%{"content" => "Follow up with Alice"}]}} = Attio.Tasks.list(client)
+      assert {:ok, %{"data" => [%{"content" => "Follow up with Alice"}]}} =
+               Attio.Tasks.list(client)
+    end
   end
 
-  test "get/2 returns a single task", %{client: client} do
-    Req.Test.stub(__MODULE__, fn conn ->
-      Req.Test.json(conn, %{"data" => @task})
-    end)
+  describe "get/2" do
+    test "returns a single task", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Req.Test.json(conn, %{"data" => @task})
+      end)
 
-    assert {:ok, %{"data" => %{"id" => %{"task_id" => "t1"}}}} = Attio.Tasks.get(client, "t1")
+      assert {:ok, %{"data" => %{"id" => %{"task_id" => "t1"}}}} = Attio.Tasks.get(client, "t1")
+    end
   end
 
-  test "create/2 creates a task", %{client: client} do
-    Req.Test.stub(__MODULE__, fn conn ->
-      Req.Test.json(conn, %{"data" => @task})
-    end)
+  describe "create/2" do
+    test "creates a task", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Req.Test.json(conn, %{"data" => @task})
+      end)
 
-    assert {:ok, %{"data" => _}} =
-             Attio.Tasks.create(client, %{
-               "content" => "Follow up with Alice",
-               "deadline_at" => nil
-             })
+      assert {:ok, %{"data" => _}} =
+               Attio.Tasks.create(client, %{
+                 "content" => "Follow up with Alice",
+                 "deadline_at" => nil
+               })
+    end
   end
 
-  test "update/3 updates a task", %{client: client} do
-    Req.Test.stub(__MODULE__, fn conn ->
-      Req.Test.json(conn, %{"data" => Map.put(@task, "is_completed", true)})
-    end)
+  describe "update/3" do
+    test "updates a task", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Req.Test.json(conn, %{"data" => Map.put(@task, "is_completed", true)})
+      end)
 
-    assert {:ok, %{"data" => %{"is_completed" => true}}} =
-             Attio.Tasks.update(client, "t1", %{"is_completed" => true})
+      assert {:ok, %{"data" => %{"is_completed" => true}}} =
+               Attio.Tasks.update(client, "t1", %{"is_completed" => true})
+    end
   end
 
-  test "delete/2 deletes a task", %{client: client} do
-    Req.Test.stub(__MODULE__, fn conn ->
-      Req.Test.json(conn, %{})
-    end)
+  describe "delete/2" do
+    test "deletes a task", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Req.Test.json(conn, %{})
+      end)
 
-    assert {:ok, _} = Attio.Tasks.delete(client, "t1")
+      assert {:ok, _} = Attio.Tasks.delete(client, "t1")
+    end
   end
 end

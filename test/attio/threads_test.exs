@@ -120,34 +120,40 @@ defmodule Attio.ThreadsTest do
     end
   end
 
-  test "list/2 returns a page of threads", %{client: client} do
-    Req.Test.stub(__MODULE__, fn conn ->
-      Req.Test.json(conn, %{"data" => [@thread], "pagination" => %{"next_cursor" => nil}})
-    end)
+  describe "list/2" do
+    test "returns a page of threads", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Req.Test.json(conn, %{"data" => [@thread], "pagination" => %{"next_cursor" => nil}})
+      end)
 
-    assert {:ok, %{"data" => [%{"id" => %{"thread_id" => "th1"}}]}} =
-             Attio.Threads.list(client)
+      assert {:ok, %{"data" => [%{"id" => %{"thread_id" => "th1"}}]}} =
+               Attio.Threads.list(client)
+    end
   end
 
-  test "get/2 returns a single thread", %{client: client} do
-    Req.Test.stub(__MODULE__, fn conn ->
-      Req.Test.json(conn, %{"data" => @thread})
-    end)
+  describe "get/2" do
+    test "returns a single thread", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Req.Test.json(conn, %{"data" => @thread})
+      end)
 
-    assert {:ok, %{"data" => %{"id" => %{"thread_id" => "th1"}}}} =
-             Attio.Threads.get(client, "th1")
+      assert {:ok, %{"data" => %{"id" => %{"thread_id" => "th1"}}}} =
+               Attio.Threads.get(client, "th1")
+    end
   end
 
-  test "create/2 creates a thread", %{client: client} do
-    Req.Test.stub(__MODULE__, fn conn ->
-      Req.Test.json(conn, %{"data" => @thread})
-    end)
+  describe "create/2" do
+    test "creates a thread", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Req.Test.json(conn, %{"data" => @thread})
+      end)
 
-    assert {:ok, %{"data" => _}} =
-             Attio.Threads.create(client, %{
-               "record_id" => "r1",
-               "format" => "plaintext",
-               "content" => "First comment"
-             })
+      assert {:ok, %{"data" => _}} =
+               Attio.Threads.create(client, %{
+                 "record_id" => "r1",
+                 "format" => "plaintext",
+                 "content" => "First comment"
+               })
+    end
   end
 end

@@ -50,6 +50,33 @@ defmodule Attio.EntriesTest do
       entries = Attio.Entries.stream(client, "pipeline") |> Enum.to_list()
       assert length(entries) == 2
     end
+
+    test "throws attio_stream_error on API failure mid-stream", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        params = URI.decode_query(conn.query_string)
+
+        case params["cursor"] do
+          nil ->
+            Req.Test.json(conn, %{
+              "data" => [@entry],
+              "pagination" => %{"next_cursor" => "next"}
+            })
+
+          "next" ->
+            conn
+            |> Plug.Conn.put_status(403)
+            |> Req.Test.json(%{
+              "status_code" => 403,
+              "type" => "authentication_error",
+              "code" => "forbidden",
+              "message" => "Insufficient permissions."
+            })
+        end
+      end)
+
+      assert {:attio_stream_error, %Attio.Error{status: 403, code: "forbidden"}} =
+               catch_throw(Attio.Entries.stream(client, "pipeline") |> Enum.to_list())
+    end
   end
 
   describe "get/3" do

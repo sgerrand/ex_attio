@@ -74,6 +74,33 @@ defmodule Attio.RecordsTest do
 
       assert [] = Attio.Records.stream(client, "people") |> Enum.to_list()
     end
+
+    test "throws attio_stream_error on API failure mid-stream", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        params = URI.decode_query(conn.query_string)
+
+        case params["cursor"] do
+          nil ->
+            Req.Test.json(conn, %{
+              "data" => [@record],
+              "pagination" => %{"next_cursor" => "cursor_page2"}
+            })
+
+          "cursor_page2" ->
+            conn
+            |> Plug.Conn.put_status(500)
+            |> Req.Test.json(%{
+              "status_code" => 500,
+              "type" => "api_error",
+              "code" => "internal_server_error",
+              "message" => "An unexpected error occurred."
+            })
+        end
+      end)
+
+      assert {:attio_stream_error, %Attio.Error{status: 500, code: "internal_server_error"}} =
+               catch_throw(Attio.Records.stream(client, "people") |> Enum.to_list())
+    end
   end
 
   describe "get/3" do

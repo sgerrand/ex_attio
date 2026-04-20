@@ -53,12 +53,6 @@ All functions return `{:ok, response}` or `{:error, %Attio.Error{}}`. See the
 `Attio` module for a full resource reference and the [Attio API docs](https://developers.attio.com)
 for attribute value formats.
 
-## Documentation
-
-```bash
-mix docs
-```
-
 ## Development
 
 ### Prerequisites

@@ -71,4 +71,63 @@ defmodule Attio.Attributes do
       json: %{"data" => attrs}
     )
   end
+
+  @doc """
+  Gets a single attribute by its ID or slug.
+
+  ## Example
+
+      Attio.Attributes.get(client, :objects, "people", "email_addresses")
+
+  """
+  @spec get(Client.t(), target(), String.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  def get(%Client{} = client, target, identifier, attribute_id) do
+    Client.request(
+      client,
+      :get,
+      "/v2/#{target}/#{Client.encode(identifier)}/attributes/#{Client.encode(attribute_id)}"
+    )
+  end
+
+  @doc """
+  Updates an attribute's configuration.
+
+  Only the supplied fields are changed; others are left untouched.
+
+  ## Example
+
+      Attio.Attributes.update(client, :objects, "people", "linkedin_url", %{
+        "title" => "LinkedIn Profile"
+      })
+
+  """
+  @spec update(Client.t(), target(), String.t(), String.t(), map()) ::
+          {:ok, map()} | {:error, term()}
+  def update(%Client{} = client, target, identifier, attribute_id, attrs) when is_map(attrs) do
+    Client.request(
+      client,
+      :patch,
+      "/v2/#{target}/#{Client.encode(identifier)}/attributes/#{Client.encode(attribute_id)}",
+      json: %{"data" => attrs}
+    )
+  end
+
+  @doc """
+  Deletes a custom attribute.
+
+  System-defined attributes cannot be deleted and will return a `403` error.
+
+  ## Example
+
+      Attio.Attributes.delete(client, :objects, "people", "linkedin_url")
+
+  """
+  @spec delete(Client.t(), target(), String.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  def delete(%Client{} = client, target, identifier, attribute_id) do
+    Client.request(
+      client,
+      :delete,
+      "/v2/#{target}/#{Client.encode(identifier)}/attributes/#{Client.encode(attribute_id)}"
+    )
+  end
 end

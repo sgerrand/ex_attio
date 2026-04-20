@@ -5,6 +5,16 @@ defmodule Attio.Meetings do
   Meetings represent calendar events — either synced from connected calendars
   or created manually. Requires the `meeting:read` scope for read operations
   and `meeting:read-write` for mutations.
+
+  ## Pagination
+
+  `list/2` returns a single page. Use `stream/2` to lazily consume all meetings:
+
+      client
+      |> Attio.Meetings.stream()
+      |> Stream.filter(fn m -> m["title"] =~ "intro" end)
+      |> Enum.to_list()
+
   """
 
   alias Attio.Client
@@ -20,6 +30,17 @@ defmodule Attio.Meetings do
   @spec list(Client.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def list(%Client{} = client, params \\ []) do
     Client.request(client, :get, "/v2/meetings", params: params)
+  end
+
+  @doc """
+  Returns a lazy stream of all meetings across all pages.
+
+  Accepts the same options as `list/2`. Raises `{:attio_stream_error, error}`
+  on API failure mid-stream.
+  """
+  @spec stream(Client.t(), keyword()) :: Enumerable.t()
+  def stream(%Client{} = client, params \\ []) do
+    Client.paginate(client, &list(client, &1), params)
   end
 
   @doc """

@@ -5,6 +5,16 @@ defmodule Attio.Tasks do
   Tasks are actionable items that can reference records and be assigned to
   workspace members. Requires the `task:read` scope for read operations and
   `task:read-write` for mutations.
+
+  ## Pagination
+
+  `list/2` returns a single page. Use `stream/2` to lazily consume all tasks:
+
+      client
+      |> Attio.Tasks.stream()
+      |> Stream.reject(fn t -> t["is_completed"] end)
+      |> Enum.to_list()
+
   """
 
   alias Attio.Client
@@ -20,6 +30,17 @@ defmodule Attio.Tasks do
   @spec list(Client.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def list(%Client{} = client, params \\ []) do
     Client.request(client, :get, "/v2/tasks", params: params)
+  end
+
+  @doc """
+  Returns a lazy stream of all tasks across all pages.
+
+  Accepts the same options as `list/2`. Raises `{:attio_stream_error, error}`
+  on API failure mid-stream.
+  """
+  @spec stream(Client.t(), keyword()) :: Enumerable.t()
+  def stream(%Client{} = client, params \\ []) do
+    Client.paginate(client, &list(client, &1), params)
   end
 
   @doc """

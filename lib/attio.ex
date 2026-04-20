@@ -47,9 +47,18 @@ defmodule Attio do
 
   ## Pagination
 
-  Resources that return lists support cursor-based pagination. Use the
-  `stream/3` function available on `Attio.Records` and `Attio.Entries`
-  to consume all pages lazily without loading everything into memory:
+  Resources that return lists support cursor-based pagination. All paginated
+  modules expose a `stream` function that lazily consumes all pages without
+  loading everything into memory at once:
+
+  | Module | Stream function |
+  |---|---|
+  | `Attio.Records` | `stream/3` |
+  | `Attio.Entries` | `stream/3` |
+  | `Attio.Notes` | `stream/2` |
+  | `Attio.Tasks` | `stream/2` |
+  | `Attio.Meetings` | `stream/2` |
+  | `Attio.Threads` | `stream/2` |
 
       Attio.Records.stream(client, "people", limit: 100)
       |> Stream.take(50)

@@ -58,3 +58,39 @@ for attribute value formats.
 ```bash
 mix docs
 ```
+
+## Development
+
+### Prerequisites
+
+This project targets Elixir ~> 1.17 and OTP 25–28. The exact versions used for
+development are pinned in `.tool-versions`:
+
+- Erlang 28.4
+- Elixir 1.19.4-otp-28
+
+If you use [asdf](https://asdf-vm.com) or [mise](https://mise.jdx.dev), the
+correct versions will be selected automatically.
+
+### Getting started
+
+```bash
+mix deps.get        # fetch dependencies
+mix test            # run the test suite
+```
+
+### Code quality
+
+```bash
+mix format                   # auto-format source files
+mix format --check-formatted # check formatting (run by CI)
+mix credo --strict           # static analysis
+```
+
+### Generating documentation
+
+```bash
+mix docs
+```
+
+Open `doc/index.html` in a browser to preview the generated site.

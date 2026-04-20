@@ -8,6 +8,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Published to Hex as the `:attio` package. Targets Elixir ~> 1.17, no runtime dependencies
 beyond `req` (HTTP client built on Finch).
 
+## Development Setup
+
+Prerequisites are pinned in `.tool-versions` (Erlang 28.4, Elixir 1.19.4-otp-28).
+Both [asdf](https://asdf-vm.com) and [mise](https://mise.jdx.dev) pick these up
+automatically.
+
+```bash
+mix deps.get   # first-time setup: fetch all dependencies
+```
+
+CI tests the matrix Elixir 1.17–1.19 × OTP 25–28. The lint checks (format,
+credo, unused deps) run only on the Elixir 1.19 / OTP 28 combination.
+
 ## Common Commands
 
 ```bash
@@ -15,7 +28,9 @@ mix test                        # Run all tests
 mix test test/attio/records_test.exs  # Run a single test file
 mix test test/attio/records_test.exs:42  # Run a single test by line number
 mix format                      # Format code
-mix format --check-formatted    # Check formatting (used by pre-commit hook)
+mix format --check-formatted    # Check formatting (used by CI / pre-commit hook)
+mix credo --strict              # Static analysis
+mix deps.unlock --check-unused  # Verify no unused deps are locked
 mix docs                        # Generate ExDoc documentation
 mix deps.get                    # Fetch dependencies
 ```

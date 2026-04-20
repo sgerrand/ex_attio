@@ -66,6 +66,60 @@ defmodule Attio.NotesTest do
     end
   end
 
+  describe "stream_all/2" do
+    test "returns {:ok, list} with all notes across pages", %{client: client} do
+      note2 = put_in(@note, ["id", "note_id"], "n2")
+
+      Req.Test.stub(__MODULE__, fn conn ->
+        params = URI.decode_query(conn.query_string)
+
+        case params["cursor"] do
+          nil ->
+            Req.Test.json(conn, %{
+              "data" => [@note],
+              "pagination" => %{"next_cursor" => "cursor_page2"}
+            })
+
+          "cursor_page2" ->
+            Req.Test.json(conn, %{
+              "data" => [note2],
+              "pagination" => %{"next_cursor" => nil}
+            })
+        end
+      end)
+
+      assert {:ok, notes} = Attio.Notes.stream_all(client)
+      assert length(notes) == 2
+      assert Enum.map(notes, &get_in(&1, ["id", "note_id"])) == ["n1", "n2"]
+    end
+
+    test "returns {:error, reason} on API failure mid-stream", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        params = URI.decode_query(conn.query_string)
+
+        case params["cursor"] do
+          nil ->
+            Req.Test.json(conn, %{
+              "data" => [@note],
+              "pagination" => %{"next_cursor" => "cursor_page2"}
+            })
+
+          "cursor_page2" ->
+            conn
+            |> Plug.Conn.put_status(500)
+            |> Req.Test.json(%{
+              "status_code" => 500,
+              "type" => "api_error",
+              "code" => "internal_server_error",
+              "message" => "An unexpected error occurred."
+            })
+        end
+      end)
+
+      assert {:error, %Attio.Error{status: 500}} = Attio.Notes.stream_all(client)
+    end
+  end
+
   test "list/2 returns a page of notes", %{client: client} do
     Req.Test.stub(__MODULE__, fn conn ->
       Req.Test.json(conn, %{"data" => [@note], "pagination" => %{"next_cursor" => nil}})

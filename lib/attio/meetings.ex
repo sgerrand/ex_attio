@@ -8,12 +8,18 @@ defmodule Attio.Meetings do
 
   ## Pagination
 
-  `list/2` returns a single page. Use `stream/2` to lazily consume all meetings:
+  `list/2` returns a single page. `stream/2` lazily pages through all meetings
+  without buffering them in memory:
 
       client
       |> Attio.Meetings.stream()
       |> Stream.filter(fn m -> m["title"] =~ "intro" end)
       |> Enum.to_list()
+
+  If you want a plain `{:ok, list}` result rather than a lazy stream, use
+  `stream_all/2`:
+
+      {:ok, meetings} = Attio.Meetings.stream_all(client)
 
   """
 
@@ -36,11 +42,32 @@ defmodule Attio.Meetings do
   Returns a lazy stream of all meetings across all pages.
 
   Accepts the same options as `list/2`. Raises `{:attio_stream_error, error}`
-  on API failure mid-stream.
+  on API failure mid-stream. Use `stream_all/2` if you prefer a standard
+  `{:ok, list} | {:error, term()}` return value.
   """
   @spec stream(Client.t(), keyword()) :: Enumerable.t()
   def stream(%Client{} = client, params \\ []) do
     Client.paginate(client, &list(client, &1), params)
+  end
+
+  @doc """
+  Fetches all meetings across all pages and returns them as a list.
+
+  Accepts the same options as `list/2`. Returns `{:ok, [map()]}` on success
+  or `{:error, term()}` if any page request fails. Unlike `stream/2`, the
+  entire result set is loaded into memory.
+
+  ## Example
+
+      {:ok, meetings} = Attio.Meetings.stream_all(client)
+
+  """
+  @spec stream_all(Client.t(), keyword()) ::
+          {:ok, [map()]} | {:error, Attio.Error.t() | Exception.t()}
+  def stream_all(%Client{} = client, params \\ []) do
+    {:ok, stream(client, params) |> Enum.to_list()}
+  catch
+    {:attio_stream_error, err} -> {:error, err}
   end
 
   @doc """

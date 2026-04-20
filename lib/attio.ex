@@ -51,14 +51,20 @@ defmodule Attio do
   modules expose a `stream` function that lazily consumes all pages without
   loading everything into memory at once:
 
-  | Module | Stream function |
-  |---|---|
-  | `Attio.Records` | `stream/3` |
-  | `Attio.Entries` | `stream/3` |
-  | `Attio.Notes` | `stream/2` |
-  | `Attio.Tasks` | `stream/2` |
-  | `Attio.Meetings` | `stream/2` |
-  | `Attio.Threads` | `stream/2` |
+  | Module | Lazy stream | Eager list |
+  |---|---|---|
+  | `Attio.Records` | `stream/3` | `stream_all/3` |
+  | `Attio.Entries` | `stream/3` | `stream_all/3` |
+  | `Attio.Notes` | `stream/2` | `stream_all/2` |
+  | `Attio.Tasks` | `stream/2` | `stream_all/2` |
+  | `Attio.Meetings` | `stream/2` | `stream_all/2` |
+  | `Attio.Threads` | `stream/2` | `stream_all/2` |
+
+  Use `stream` when composing with `Stream` functions or when you only need
+  part of the result set. Use `stream_all` when you want all pages as a plain
+  `{:ok, list}`:
+
+      {:ok, records} = Attio.Records.stream_all(client, "people")
 
       Attio.Records.stream(client, "people", limit: 100)
       |> Stream.take(50)

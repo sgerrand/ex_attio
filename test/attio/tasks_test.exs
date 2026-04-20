@@ -67,6 +67,60 @@ defmodule Attio.TasksTest do
     end
   end
 
+  describe "stream_all/2" do
+    test "returns {:ok, list} with all tasks across pages", %{client: client} do
+      task2 = put_in(@task, ["id", "task_id"], "t2")
+
+      Req.Test.stub(__MODULE__, fn conn ->
+        params = URI.decode_query(conn.query_string)
+
+        case params["cursor"] do
+          nil ->
+            Req.Test.json(conn, %{
+              "data" => [@task],
+              "pagination" => %{"next_cursor" => "cursor_page2"}
+            })
+
+          "cursor_page2" ->
+            Req.Test.json(conn, %{
+              "data" => [task2],
+              "pagination" => %{"next_cursor" => nil}
+            })
+        end
+      end)
+
+      assert {:ok, tasks} = Attio.Tasks.stream_all(client)
+      assert length(tasks) == 2
+      assert Enum.map(tasks, &get_in(&1, ["id", "task_id"])) == ["t1", "t2"]
+    end
+
+    test "returns {:error, reason} on API failure mid-stream", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        params = URI.decode_query(conn.query_string)
+
+        case params["cursor"] do
+          nil ->
+            Req.Test.json(conn, %{
+              "data" => [@task],
+              "pagination" => %{"next_cursor" => "cursor_page2"}
+            })
+
+          "cursor_page2" ->
+            conn
+            |> Plug.Conn.put_status(500)
+            |> Req.Test.json(%{
+              "status_code" => 500,
+              "type" => "api_error",
+              "code" => "internal_server_error",
+              "message" => "An unexpected error occurred."
+            })
+        end
+      end)
+
+      assert {:error, %Attio.Error{status: 500}} = Attio.Tasks.stream_all(client)
+    end
+  end
+
   test "list/2 returns a page of tasks", %{client: client} do
     Req.Test.stub(__MODULE__, fn conn ->
       Req.Test.json(conn, %{"data" => [@task], "pagination" => %{"next_cursor" => nil}})

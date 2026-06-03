@@ -46,16 +46,24 @@ defmodule Attio.Client do
   @doc """
   Creates a new client.
 
-  Raises `KeyError` if `:api_key` is not provided.
+  Raises `KeyError` if `:api_key` is not provided, or `ArgumentError` if it is
+  not a non-empty string.
   """
   @spec new(keyword()) :: t()
   def new(opts) do
     {client_opts, req_opts} = Keyword.split(opts, [:api_key, :base_url])
-    api_key = Keyword.fetch!(client_opts, :api_key)
+    api_key = client_opts |> Keyword.fetch!(:api_key) |> validate_api_key!()
     base_url = Keyword.get(client_opts, :base_url, @base_url)
 
     req = Req.new([base_url: base_url, auth: {:bearer, api_key}, retry: false] ++ req_opts)
     %__MODULE__{req: req}
+  end
+
+  @spec validate_api_key!(term()) :: String.t()
+  defp validate_api_key!(api_key) when is_binary(api_key) and api_key != "", do: api_key
+
+  defp validate_api_key!(api_key) do
+    raise ArgumentError, ":api_key must be a non-empty string, got: #{inspect(api_key)}"
   end
 
   @doc false

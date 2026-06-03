@@ -10,6 +10,18 @@ defmodule Attio.ClientTest do
     test "raises when api_key is missing" do
       assert_raise KeyError, fn -> Attio.Client.new([]) end
     end
+
+    test "raises when api_key is nil" do
+      assert_raise ArgumentError, ~r/:api_key must be a non-empty string/, fn ->
+        Attio.Client.new(api_key: nil)
+      end
+    end
+
+    test "raises when api_key is empty" do
+      assert_raise ArgumentError, ~r/:api_key must be a non-empty string/, fn ->
+        Attio.Client.new(api_key: "")
+      end
+    end
   end
 
   describe "encode/1" do

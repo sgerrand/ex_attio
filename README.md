@@ -16,7 +16,7 @@ Add `attio` to your dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:attio, "~> 0.2.0"}
+    {:attio, "~> 0.3.0"}
   ]
 end
 ```

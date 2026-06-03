@@ -81,6 +81,7 @@ mix test            # run the test suite
 mix format                   # auto-format source files
 mix format --check-formatted # check formatting (run by CI)
 mix credo --strict           # static analysis
+mix dialyzer                 # type analysis (run by CI; first run builds the PLT)
 ```
 
 ### Generating documentation

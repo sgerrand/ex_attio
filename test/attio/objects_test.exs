@@ -1,6 +1,8 @@
 defmodule Attio.ObjectsTest do
   use ExUnit.Case, async: true
 
+  import Attio.Test.RequestAssertions
+
   setup do
     client = Attio.Client.new(api_key: "test-key", plug: {Req.Test, __MODULE__})
     %{client: client}
@@ -9,6 +11,8 @@ defmodule Attio.ObjectsTest do
   describe "list/1" do
     test "returns list of objects", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "GET", "/v2/objects")
+
         Req.Test.json(conn, %{
           "data" => [%{"id" => %{"object_id" => "abc"}, "api_slug" => "people"}]
         })
@@ -21,6 +25,7 @@ defmodule Attio.ObjectsTest do
   describe "get/2" do
     test "returns a single object", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "GET", "/v2/objects/people")
         Req.Test.json(conn, %{"data" => %{"api_slug" => "people", "singular_noun" => "Person"}})
       end)
 
@@ -47,6 +52,17 @@ defmodule Attio.ObjectsTest do
   describe "create/2" do
     test "creates a custom object", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "POST", "/v2/objects")
+        {conn, body} = read_json_body(conn)
+
+        assert body == %{
+                 "data" => %{
+                   "api_slug" => "widgets",
+                   "singular_noun" => "Widget",
+                   "plural_noun" => "Widgets"
+                 }
+               }
+
         Req.Test.json(conn, %{
           "data" => %{
             "api_slug" => "widgets",
@@ -68,6 +84,9 @@ defmodule Attio.ObjectsTest do
   describe "update/3" do
     test "updates an object", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "PATCH", "/v2/objects/people")
+        {conn, body} = read_json_body(conn)
+        assert body == %{"data" => %{"singular_noun" => "Human"}}
         Req.Test.json(conn, %{"data" => %{"api_slug" => "people", "singular_noun" => "Human"}})
       end)
 
@@ -79,6 +98,7 @@ defmodule Attio.ObjectsTest do
   describe "list_views/2" do
     test "returns views for an object", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "GET", "/v2/objects/people/views")
         Req.Test.json(conn, %{"data" => [%{"id" => %{"view_id" => "v1"}}]})
       end)
 

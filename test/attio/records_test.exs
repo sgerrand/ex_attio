@@ -1,6 +1,8 @@
 defmodule Attio.RecordsTest do
   use ExUnit.Case, async: true
 
+  import Attio.Test.RequestAssertions
+
   @record %{
     "id" => %{"workspace_id" => "ws1", "object_id" => "obj1", "record_id" => "r1"},
     "values" => %{}
@@ -161,6 +163,7 @@ defmodule Attio.RecordsTest do
   describe "get/3" do
     test "returns a single record", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "GET", "/v2/objects/people/records/r1")
         Req.Test.json(conn, %{"data" => @record})
       end)
 
@@ -172,6 +175,17 @@ defmodule Attio.RecordsTest do
   describe "create/3" do
     test "creates a record", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "POST", "/v2/objects/people/records")
+        {conn, body} = read_json_body(conn)
+
+        assert body == %{
+                 "data" => %{
+                   "values" => %{
+                     "email_addresses" => [%{"email_address" => "alice@example.com"}]
+                   }
+                 }
+               }
+
         Req.Test.json(conn, %{"data" => @record})
       end)
 
@@ -187,6 +201,9 @@ defmodule Attio.RecordsTest do
       updated = put_in(@record, ["values", "name"], [%{"first_name" => "Bob"}])
 
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "PATCH", "/v2/objects/people/records/r1")
+        {conn, body} = read_json_body(conn)
+        assert body == %{"data" => %{"values" => %{"name" => [%{"first_name" => "Bob"}]}}}
         Req.Test.json(conn, %{"data" => updated})
       end)
 
@@ -200,6 +217,7 @@ defmodule Attio.RecordsTest do
   describe "delete/3" do
     test "deletes a record", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "DELETE", "/v2/objects/people/records/r1")
         Req.Test.json(conn, %{})
       end)
 
@@ -210,6 +228,17 @@ defmodule Attio.RecordsTest do
   describe "assert/3" do
     test "returns existing record with action=updated when match found", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "POST", "/v2/objects/people/records/assert")
+        {conn, body} = read_json_body(conn)
+
+        assert body == %{
+                 "data" => %{
+                   "values" => %{
+                     "email_addresses" => [%{"email_address" => "alice@example.com"}]
+                   }
+                 }
+               }
+
         Req.Test.json(conn, %{"data" => @record, "action" => "updated"})
       end)
 

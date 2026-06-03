@@ -12,6 +12,16 @@ defmodule Attio.ClientTest do
     end
   end
 
+  describe "encode/1" do
+    test "leaves unreserved identifiers untouched" do
+      assert Attio.Client.encode("people") == "people"
+    end
+
+    test "percent-encodes reserved characters in path segments" do
+      assert Attio.Client.encode("a/b c?d") == "a%2Fb%20c%3Fd"
+    end
+  end
+
   describe "request/4" do
     setup do
       client = Attio.Client.new(api_key: "test-key", plug: {Req.Test, __MODULE__})

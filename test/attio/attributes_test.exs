@@ -1,6 +1,8 @@
 defmodule Attio.AttributesTest do
   use ExUnit.Case, async: true
 
+  import Attio.Test.RequestAssertions
+
   @attribute %{
     "api_slug" => "linkedin_url",
     "title" => "LinkedIn URL",
@@ -15,6 +17,8 @@ defmodule Attio.AttributesTest do
   describe "list/4" do
     test "returns attributes for an object", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "GET", "/v2/objects/people/attributes")
+
         Req.Test.json(conn, %{
           "data" => [
             %{"api_slug" => "email_addresses", "type" => "email-address"},
@@ -29,6 +33,7 @@ defmodule Attio.AttributesTest do
 
     test "returns attributes for a list", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "GET", "/v2/lists/pipeline/attributes")
         Req.Test.json(conn, %{"data" => [%{"api_slug" => "stage", "type" => "status"}]})
       end)
 
@@ -40,6 +45,17 @@ defmodule Attio.AttributesTest do
   describe "create/4" do
     test "creates an attribute on an object", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "POST", "/v2/objects/people/attributes")
+        {conn, body} = read_json_body(conn)
+
+        assert body == %{
+                 "data" => %{
+                   "api_slug" => "linkedin_url",
+                   "title" => "LinkedIn URL",
+                   "type" => "text"
+                 }
+               }
+
         Req.Test.json(conn, %{"data" => @attribute})
       end)
 
@@ -55,6 +71,7 @@ defmodule Attio.AttributesTest do
   describe "get/4" do
     test "returns a single attribute by slug", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "GET", "/v2/objects/people/attributes/linkedin_url")
         Req.Test.json(conn, %{"data" => @attribute})
       end)
 
@@ -84,6 +101,9 @@ defmodule Attio.AttributesTest do
       updated = Map.put(@attribute, "title", "LinkedIn Profile")
 
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "PATCH", "/v2/objects/people/attributes/linkedin_url")
+        {conn, body} = read_json_body(conn)
+        assert body == %{"data" => %{"title" => "LinkedIn Profile"}}
         Req.Test.json(conn, %{"data" => updated})
       end)
 
@@ -97,6 +117,7 @@ defmodule Attio.AttributesTest do
   describe "delete/4" do
     test "deletes a custom attribute", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "DELETE", "/v2/objects/people/attributes/linkedin_url")
         Req.Test.json(conn, %{})
       end)
 

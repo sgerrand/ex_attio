@@ -1,6 +1,8 @@
 defmodule Attio.EntriesTest do
   use ExUnit.Case, async: true
 
+  import Attio.Test.RequestAssertions
+
   @entry %{
     "id" => %{"workspace_id" => "ws1", "list_id" => "l1", "entry_id" => "e1"},
     "values" => %{}
@@ -137,6 +139,7 @@ defmodule Attio.EntriesTest do
   describe "get/3" do
     test "returns a single entry", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "GET", "/v2/lists/pipeline/entries/e1")
         Req.Test.json(conn, %{"data" => @entry})
       end)
 
@@ -148,6 +151,9 @@ defmodule Attio.EntriesTest do
   describe "create/3" do
     test "creates an entry", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "POST", "/v2/lists/pipeline/entries")
+        {conn, body} = read_json_body(conn)
+        assert body == %{"data" => %{"record_id" => "rec1"}}
         Req.Test.json(conn, %{"data" => @entry})
       end)
 
@@ -159,6 +165,9 @@ defmodule Attio.EntriesTest do
   describe "update/4" do
     test "updates an entry", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "PATCH", "/v2/lists/pipeline/entries/e1")
+        {conn, body} = read_json_body(conn)
+        assert body == %{"data" => %{"stage" => "closed"}}
         Req.Test.json(conn, %{"data" => @entry})
       end)
 
@@ -170,6 +179,7 @@ defmodule Attio.EntriesTest do
   describe "delete/3" do
     test "deletes an entry", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
+        conn = assert_request(conn, "DELETE", "/v2/lists/pipeline/entries/e1")
         Req.Test.json(conn, %{})
       end)
 

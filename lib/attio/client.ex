@@ -74,6 +74,14 @@ defmodule Attio.Client do
   end
 
   @doc false
+  @spec collect(Enumerable.t()) :: {:ok, [map()]} | {:error, Attio.Error.t() | Exception.t()}
+  def collect(stream) do
+    {:ok, Enum.to_list(stream)}
+  catch
+    {:attio_stream_error, err} -> {:error, err}
+  end
+
+  @doc false
   @spec request(t(), atom(), String.t(), keyword()) ::
           {:ok, term()} | {:error, Attio.Error.t() | Exception.t()}
   def request(%__MODULE__{req: req}, method, path, opts \\ []) do

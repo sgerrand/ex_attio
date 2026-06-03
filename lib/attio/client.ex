@@ -107,7 +107,7 @@ defmodule Attio.Client do
   def request(%__MODULE__{req: req}, method, path, opts \\ []) do
     case Req.request(req, [method: method, url: path] ++ opts) do
       {:ok, %{status: status, body: body}} when status in 200..299 ->
-        {:ok, body}
+        {:ok, normalise_body(body)}
 
       {:ok, %{status: status, body: body}} ->
         {:error, build_error(status, body)}
@@ -116,6 +116,13 @@ defmodule Attio.Client do
         {:error, exception}
     end
   end
+
+  # The API answers some requests (e.g. DELETE) with 204 No Content, which Req
+  # surfaces as an empty-string body. Normalise to an empty map so success
+  # responses are always maps, as the resource specs promise.
+  @spec normalise_body(term()) :: term()
+  defp normalise_body(body) when body in [nil, ""], do: %{}
+  defp normalise_body(body), do: body
 
   # Builds an Attio.Error from a non-2xx response body. A structured Attio error
   # body carries at least a "type"; missing fields fall back to sensible

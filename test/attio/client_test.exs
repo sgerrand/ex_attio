@@ -49,6 +49,15 @@ defmodule Attio.ClientTest do
                Attio.Client.request(client, :get, "/v2/meta/token")
     end
 
+    test "normalises a 204 No Content body to an empty map", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        Plug.Conn.send_resp(conn, 204, "")
+      end)
+
+      assert Attio.Client.request(client, :delete, "/v2/objects/people/records/r1") ==
+               {:ok, %{}}
+    end
+
     test "returns Attio.Error on API error response", %{client: client} do
       Req.Test.stub(__MODULE__, fn conn ->
         conn

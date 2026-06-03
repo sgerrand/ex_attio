@@ -42,7 +42,8 @@ mix deps.get                    # Fetch dependencies
 ```text
 lib/attio.ex              # Top-level moduledoc and resource reference table
 lib/attio/client.ex       # Attio.Client — Req wrapper, auth, error normalisation
-lib/attio/error.ex        # Attio.Error struct (status, type, code, message)
+lib/attio/error.ex        # Attio.Error exception (status, type, code, message)
+lib/attio/paginated.ex    # Attio.Paginated — `use`-able stream/2 + stream_all/2 for flat list resources
 lib/attio/objects.ex      # Object schema CRUD
 lib/attio/attributes.ex   # Attribute CRUD on objects/lists
 lib/attio/records.ex      # Record CRUD + stream/3 + assert/3
@@ -67,8 +68,12 @@ lib/attio/meta.ex         # Meta.get_token/1
 - **Request/response**: all functions return `{:ok, map()} | {:error, Attio.Error.t() | Exception.t()}`.
   Response bodies are decoded JSON with **string keys** (not atoms).
 
-- **Pagination**: cursor-based. `list/2-3` returns one page. `stream/2-3` on
-  `Records` and `Entries` wraps `Stream.resource/3` for lazy multi-page iteration.
+- **Pagination**: cursor-based. `list/2-3` returns one page. `Client.paginate/3`
+  wraps `Stream.resource/3` for lazy multi-page iteration; `Client.collect/1`
+  drains a stream into `{:ok, list} | {:error, _}`. `Records`/`Entries` define
+  `stream/3` + `stream_all/3` directly (they page a sub-collection, so they take
+  an extra path segment); `Notes`/`Tasks`/`Meetings`/`Threads` get `stream/2` +
+  `stream_all/2` from `use Attio.Paginated, resource: "…"`.
 
 - **Attribute values**: passed and returned as plain maps keyed by attribute slug.
   Responses include an `"attribute_type"` discriminator field.

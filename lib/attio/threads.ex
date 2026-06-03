@@ -24,6 +24,8 @@ defmodule Attio.Threads do
 
   """
 
+  use Attio.Paginated, resource: "threads"
+
   alias Attio.Client
 
   @doc """
@@ -37,36 +39,6 @@ defmodule Attio.Threads do
   @spec list(Client.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def list(%Client{} = client, params \\ []) do
     Client.request(client, :get, "/v2/threads", params: params)
-  end
-
-  @doc """
-  Returns a lazy stream of all threads across all pages.
-
-  Accepts the same options as `list/2`. Raises `{:attio_stream_error, error}`
-  on API failure mid-stream. Use `stream_all/2` if you prefer a standard
-  `{:ok, list} | {:error, term()}` return value.
-  """
-  @spec stream(Client.t(), keyword()) :: Enumerable.t()
-  def stream(%Client{} = client, params \\ []) do
-    Client.paginate(client, &list(client, &1), params)
-  end
-
-  @doc """
-  Fetches all threads across all pages and returns them as a list.
-
-  Accepts the same options as `list/2`. Returns `{:ok, [map()]}` on success
-  or `{:error, term()}` if any page request fails. Unlike `stream/2`, the
-  entire result set is loaded into memory.
-
-  ## Example
-
-      {:ok, threads} = Attio.Threads.stream_all(client)
-
-  """
-  @spec stream_all(Client.t(), keyword()) ::
-          {:ok, [map()]} | {:error, Attio.Error.t() | Exception.t()}
-  def stream_all(%Client{} = client, params \\ []) do
-    client |> stream(params) |> Client.collect()
   end
 
   @doc """

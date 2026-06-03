@@ -5,16 +5,11 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   release-please:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
-        with:
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
-          token: ${{ secrets.RELEASE_PLEASE_PAT }}
+    uses: release-mate/action/.github/workflows/release-please.yml@71f10a09c0b5161420efe386fdfa657f9f7d5688 # v1.1.1
+    secrets:
+      client-id: ${{ secrets.RELEASE_MATE_CLIENT_ID }}
+      app-private-key: ${{ secrets.RELEASE_MATE_PRIVATE_KEY }}

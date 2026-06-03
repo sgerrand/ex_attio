@@ -1,4 +1,4 @@
-name: Publish to Hex.pm
+name: Publish
 
 permissions:
   contents: read
@@ -9,7 +9,7 @@ on:
 
 jobs:
   publish:
-    name: Build and publish to hex.pm
+    name: Publish to Hex.pm
     runs-on: ubuntu-latest
     steps:
     - name: Checkout

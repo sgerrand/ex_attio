@@ -46,8 +46,7 @@ defmodule Attio.Paginated do
       end
 
       @doc unquote(stream_all_doc)
-      @spec stream_all(Attio.Client.t(), keyword()) ::
-              {:ok, [map()]} | {:error, Attio.Error.t() | Exception.t()}
+      @spec stream_all(Attio.Client.t(), keyword()) :: Attio.Client.list_response()
       def stream_all(%Attio.Client{} = client, params \\ []) do
         client |> stream(params) |> Attio.Client.collect()
       end

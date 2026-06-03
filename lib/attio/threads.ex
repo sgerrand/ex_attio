@@ -36,7 +36,7 @@ defmodule Attio.Threads do
     * `:limit` - Number of threads per page.
     * `:cursor` - Pagination cursor from a previous response.
   """
-  @spec list(Client.t(), keyword()) :: {:ok, map()} | {:error, term()}
+  @spec list(Client.t(), keyword()) :: Client.response()
   def list(%Client{} = client, params \\ []) do
     Client.request(client, :get, "/v2/threads", params: params)
   end
@@ -44,7 +44,7 @@ defmodule Attio.Threads do
   @doc """
   Gets a single thread by its ID, including all comments.
   """
-  @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec get(Client.t(), String.t()) :: Client.response()
   def get(%Client{} = client, thread_id) do
     Client.request(client, :get, "/v2/threads/#{Client.encode(thread_id)}")
   end
@@ -59,7 +59,7 @@ defmodule Attio.Threads do
     * `"content"` - Initial comment content.
 
   """
-  @spec create(Client.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec create(Client.t(), map()) :: Client.response()
   def create(%Client{} = client, attrs) when is_map(attrs) do
     Client.request(client, :post, "/v2/threads", json: %{"data" => attrs})
   end

@@ -30,7 +30,7 @@ defmodule Attio.Tasks do
     * `:limit` - Number of tasks per page.
     * `:cursor` - Pagination cursor from a previous response.
   """
-  @spec list(Client.t(), keyword()) :: {:ok, map()} | {:error, term()}
+  @spec list(Client.t(), keyword()) :: Client.response()
   def list(%Client{} = client, params \\ []) do
     Client.request(client, :get, "/v2/tasks", params: params)
   end
@@ -38,7 +38,7 @@ defmodule Attio.Tasks do
   @doc """
   Gets a single task by its ID.
   """
-  @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec get(Client.t(), String.t()) :: Client.response()
   def get(%Client{} = client, task_id) do
     Client.request(client, :get, "/v2/tasks/#{Client.encode(task_id)}")
   end
@@ -57,7 +57,7 @@ defmodule Attio.Tasks do
     * `"assignees"` - List of `%{"referenced_actor_type" => "workspace-member", "referenced_actor_id" => id}` maps.
 
   """
-  @spec create(Client.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec create(Client.t(), map()) :: Client.response()
   def create(%Client{} = client, attrs) when is_map(attrs) do
     Client.request(client, :post, "/v2/tasks", json: %{"data" => attrs})
   end
@@ -65,7 +65,7 @@ defmodule Attio.Tasks do
   @doc """
   Updates a task.
   """
-  @spec update(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec update(Client.t(), String.t(), map()) :: Client.response()
   def update(%Client{} = client, task_id, attrs) when is_map(attrs) do
     Client.request(client, :patch, "/v2/tasks/#{Client.encode(task_id)}",
       json: %{"data" => attrs}
@@ -75,7 +75,7 @@ defmodule Attio.Tasks do
   @doc """
   Deletes a task.
   """
-  @spec delete(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec delete(Client.t(), String.t()) :: Client.response()
   def delete(%Client{} = client, task_id) do
     Client.request(client, :delete, "/v2/tasks/#{Client.encode(task_id)}")
   end

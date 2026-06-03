@@ -12,7 +12,7 @@ defmodule Attio.Meta do
   Returns information about the current API token, including its scopes and
   the workspace it belongs to.
   """
-  @spec get_token(Client.t()) :: {:ok, map()} | {:error, term()}
+  @spec get_token(Client.t()) :: Client.response()
   def get_token(%Client{} = client) do
     Client.request(client, :get, "/v2/meta/token")
   end

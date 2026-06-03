@@ -30,7 +30,7 @@ defmodule Attio.Entries do
     * `:limit` - Number of entries per page (1–1000, default 500).
     * `:cursor` - Opaque pagination cursor from a previous response.
   """
-  @spec list(Client.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
+  @spec list(Client.t(), String.t(), keyword()) :: Client.response()
   def list(%Client{} = client, list_id, params \\ []) do
     Client.request(client, :get, "/v2/lists/#{Client.encode(list_id)}/entries", params: params)
   end
@@ -59,8 +59,7 @@ defmodule Attio.Entries do
       {:ok, entries} = Attio.Entries.stream_all(client, "pipeline")
 
   """
-  @spec stream_all(Client.t(), String.t(), keyword()) ::
-          {:ok, [map()]} | {:error, Attio.Error.t() | Exception.t()}
+  @spec stream_all(Client.t(), String.t(), keyword()) :: Client.list_response()
   def stream_all(%Client{} = client, list_id, params \\ []) do
     client |> stream(list_id, params) |> Client.collect()
   end
@@ -68,7 +67,7 @@ defmodule Attio.Entries do
   @doc """
   Gets a single entry by its ID.
   """
-  @spec get(Client.t(), String.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec get(Client.t(), String.t(), String.t()) :: Client.response()
   def get(%Client{} = client, list_id, entry_id) do
     Client.request(
       client,
@@ -85,7 +84,7 @@ defmodule Attio.Entries do
     * `"record_id"` - ID of the record to add.
 
   """
-  @spec create(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec create(Client.t(), String.t(), map()) :: Client.response()
   def create(%Client{} = client, list_id, attrs) when is_map(attrs) do
     Client.request(client, :post, "/v2/lists/#{Client.encode(list_id)}/entries",
       json: %{"data" => attrs}
@@ -95,7 +94,7 @@ defmodule Attio.Entries do
   @doc """
   Updates an entry's attribute values.
   """
-  @spec update(Client.t(), String.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec update(Client.t(), String.t(), String.t(), map()) :: Client.response()
   def update(%Client{} = client, list_id, entry_id, attrs) when is_map(attrs) do
     Client.request(
       client,
@@ -108,7 +107,7 @@ defmodule Attio.Entries do
   @doc """
   Deletes an entry from a list.
   """
-  @spec delete(Client.t(), String.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec delete(Client.t(), String.t(), String.t()) :: Client.response()
   def delete(%Client{} = client, list_id, entry_id) do
     Client.request(
       client,

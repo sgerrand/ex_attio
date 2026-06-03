@@ -24,6 +24,19 @@ defmodule Attio.Client do
 
   @type t :: %__MODULE__{req: Req.Request.t()}
 
+  @typedoc """
+  Return value of a single-resource request: the decoded JSON body on success,
+  or an error. API errors are `Attio.Error`; transport failures are the
+  underlying exception (e.g. `Req.TransportError`).
+  """
+  @type response :: {:ok, map()} | {:error, Attio.Error.t() | Exception.t()}
+
+  @typedoc """
+  Return value of a paginated collection request that buffers every page into a
+  list. Same error shapes as `t:response/0`.
+  """
+  @type list_response :: {:ok, [map()]} | {:error, Attio.Error.t() | Exception.t()}
+
   @base_url "https://api.attio.com"
 
   @doc false
@@ -46,8 +59,7 @@ defmodule Attio.Client do
   end
 
   @doc false
-  @spec paginate(t(), (keyword() -> {:ok, map()} | {:error, term()}), keyword()) ::
-          Enumerable.t()
+  @spec paginate(t(), (keyword() -> response()), keyword()) :: Enumerable.t()
   def paginate(%__MODULE__{}, list_fn, params \\ []) do
     Stream.resource(
       fn -> {params, nil, false} end,
@@ -74,7 +86,7 @@ defmodule Attio.Client do
   end
 
   @doc false
-  @spec collect(Enumerable.t()) :: {:ok, [map()]} | {:error, Attio.Error.t() | Exception.t()}
+  @spec collect(Enumerable.t()) :: list_response()
   def collect(stream) do
     {:ok, Enum.to_list(stream)}
   catch

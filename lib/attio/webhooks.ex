@@ -12,7 +12,7 @@ defmodule Attio.Webhooks do
   @doc """
   Lists all webhooks in the workspace.
   """
-  @spec list(Client.t()) :: {:ok, map()} | {:error, term()}
+  @spec list(Client.t()) :: Client.response()
   def list(%Client{} = client) do
     Client.request(client, :get, "/v2/webhooks")
   end
@@ -20,7 +20,7 @@ defmodule Attio.Webhooks do
   @doc """
   Gets a single webhook by its ID.
   """
-  @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec get(Client.t(), String.t()) :: Client.response()
   def get(%Client{} = client, webhook_id) do
     Client.request(client, :get, "/v2/webhooks/#{Client.encode(webhook_id)}")
   end
@@ -45,7 +45,7 @@ defmodule Attio.Webhooks do
       })
 
   """
-  @spec create(Client.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec create(Client.t(), map()) :: Client.response()
   def create(%Client{} = client, attrs) when is_map(attrs) do
     Client.request(client, :post, "/v2/webhooks", json: %{"data" => attrs})
   end
@@ -53,7 +53,7 @@ defmodule Attio.Webhooks do
   @doc """
   Updates a webhook (e.g. to change its target URL or subscriptions).
   """
-  @spec update(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec update(Client.t(), String.t(), map()) :: Client.response()
   def update(%Client{} = client, webhook_id, attrs) when is_map(attrs) do
     Client.request(client, :patch, "/v2/webhooks/#{Client.encode(webhook_id)}",
       json: %{"data" => attrs}
@@ -63,7 +63,7 @@ defmodule Attio.Webhooks do
   @doc """
   Deletes a webhook.
   """
-  @spec delete(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec delete(Client.t(), String.t()) :: Client.response()
   def delete(%Client{} = client, webhook_id) do
     Client.request(client, :delete, "/v2/webhooks/#{Client.encode(webhook_id)}")
   end

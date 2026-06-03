@@ -51,7 +51,7 @@ defmodule Attio.Records do
     * `:limit` - Number of records per page (1–1000, default 500).
     * `:cursor` - Opaque pagination cursor from a previous response.
   """
-  @spec list(Client.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
+  @spec list(Client.t(), String.t(), keyword()) :: Client.response()
   def list(%Client{} = client, object, params \\ []) do
     Client.request(client, :get, "/v2/objects/#{Client.encode(object)}/records", params: params)
   end
@@ -80,8 +80,7 @@ defmodule Attio.Records do
       {:ok, records} = Attio.Records.stream_all(client, "people")
 
   """
-  @spec stream_all(Client.t(), String.t(), keyword()) ::
-          {:ok, [map()]} | {:error, Attio.Error.t() | Exception.t()}
+  @spec stream_all(Client.t(), String.t(), keyword()) :: Client.list_response()
   def stream_all(%Client{} = client, object, params \\ []) do
     client |> stream(object, params) |> Client.collect()
   end
@@ -89,7 +88,7 @@ defmodule Attio.Records do
   @doc """
   Gets a single record by its ID.
   """
-  @spec get(Client.t(), String.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec get(Client.t(), String.t(), String.t()) :: Client.response()
   def get(%Client{} = client, object, record) do
     Client.request(
       client,
@@ -109,7 +108,7 @@ defmodule Attio.Records do
       })
 
   """
-  @spec create(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec create(Client.t(), String.t(), map()) :: Client.response()
   def create(%Client{} = client, object, values) when is_map(values) do
     Client.request(client, :post, "/v2/objects/#{Client.encode(object)}/records",
       json: %{"data" => %{"values" => values}}
@@ -121,7 +120,7 @@ defmodule Attio.Records do
 
   Only the supplied attributes are changed; others are left untouched.
   """
-  @spec update(Client.t(), String.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec update(Client.t(), String.t(), String.t(), map()) :: Client.response()
   def update(%Client{} = client, object, record, values) when is_map(values) do
     Client.request(
       client,
@@ -134,7 +133,7 @@ defmodule Attio.Records do
   @doc """
   Deletes a record.
   """
-  @spec delete(Client.t(), String.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec delete(Client.t(), String.t(), String.t()) :: Client.response()
   def delete(%Client{} = client, object, record) do
     Client.request(
       client,
@@ -159,7 +158,7 @@ defmodule Attio.Records do
       })
 
   """
-  @spec assert(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec assert(Client.t(), String.t(), map()) :: Client.response()
   def assert(%Client{} = client, object, values) when is_map(values) do
     Client.request(client, :post, "/v2/objects/#{Client.encode(object)}/records/assert",
       json: %{"data" => %{"values" => values}}

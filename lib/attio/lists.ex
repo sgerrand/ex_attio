@@ -14,7 +14,7 @@ defmodule Attio.Lists do
   @doc """
   Lists all lists in the workspace.
   """
-  @spec list(Client.t()) :: {:ok, map()} | {:error, term()}
+  @spec list(Client.t()) :: Client.response()
   def list(%Client{} = client) do
     Client.request(client, :get, "/v2/lists")
   end
@@ -22,7 +22,7 @@ defmodule Attio.Lists do
   @doc """
   Gets a single list by its ID or slug.
   """
-  @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec get(Client.t(), String.t()) :: Client.response()
   def get(%Client{} = client, list_id) do
     Client.request(client, :get, "/v2/lists/#{Client.encode(list_id)}")
   end
@@ -36,7 +36,7 @@ defmodule Attio.Lists do
     * `"object_slug"` - The slug of the object type this list tracks (e.g. `"people"`).
 
   """
-  @spec create(Client.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec create(Client.t(), map()) :: Client.response()
   def create(%Client{} = client, attrs) when is_map(attrs) do
     Client.request(client, :post, "/v2/lists", json: %{"data" => attrs})
   end
@@ -44,7 +44,7 @@ defmodule Attio.Lists do
   @doc """
   Updates a list's configuration.
   """
-  @spec update(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec update(Client.t(), String.t(), map()) :: Client.response()
   def update(%Client{} = client, list_id, attrs) when is_map(attrs) do
     Client.request(client, :patch, "/v2/lists/#{Client.encode(list_id)}",
       json: %{"data" => attrs}
@@ -54,7 +54,7 @@ defmodule Attio.Lists do
   @doc """
   Lists saved views for a list.
   """
-  @spec list_views(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec list_views(Client.t(), String.t()) :: Client.response()
   def list_views(%Client{} = client, list_id) do
     Client.request(client, :get, "/v2/lists/#{Client.encode(list_id)}/views")
   end

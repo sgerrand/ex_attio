@@ -37,7 +37,7 @@ defmodule Attio.Attributes do
       Attio.Attributes.list(client, :objects, "people")
 
   """
-  @spec list(Client.t(), target(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
+  @spec list(Client.t(), target(), String.t(), keyword()) :: Client.response()
   def list(%Client{} = client, target, identifier, params \\ []) do
     Client.request(client, :get, "/v2/#{target}/#{Client.encode(identifier)}/attributes",
       params: params
@@ -65,7 +65,7 @@ defmodule Attio.Attributes do
       })
 
   """
-  @spec create(Client.t(), target(), String.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec create(Client.t(), target(), String.t(), map()) :: Client.response()
   def create(%Client{} = client, target, identifier, attrs) when is_map(attrs) do
     Client.request(client, :post, "/v2/#{target}/#{Client.encode(identifier)}/attributes",
       json: %{"data" => attrs}
@@ -80,7 +80,7 @@ defmodule Attio.Attributes do
       Attio.Attributes.get(client, :objects, "people", "email_addresses")
 
   """
-  @spec get(Client.t(), target(), String.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec get(Client.t(), target(), String.t(), String.t()) :: Client.response()
   def get(%Client{} = client, target, identifier, attribute_id) do
     Client.request(
       client,
@@ -102,7 +102,7 @@ defmodule Attio.Attributes do
 
   """
   @spec update(Client.t(), target(), String.t(), String.t(), map()) ::
-          {:ok, map()} | {:error, term()}
+          Client.response()
   def update(%Client{} = client, target, identifier, attribute_id, attrs) when is_map(attrs) do
     Client.request(
       client,
@@ -122,7 +122,7 @@ defmodule Attio.Attributes do
       Attio.Attributes.delete(client, :objects, "people", "linkedin_url")
 
   """
-  @spec delete(Client.t(), target(), String.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec delete(Client.t(), target(), String.t(), String.t()) :: Client.response()
   def delete(%Client{} = client, target, identifier, attribute_id) do
     Client.request(
       client,

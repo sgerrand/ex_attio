@@ -11,7 +11,7 @@ defmodule Attio.WorkspaceMembers do
   @doc """
   Lists all workspace members.
   """
-  @spec list(Client.t()) :: {:ok, map()} | {:error, term()}
+  @spec list(Client.t()) :: Client.response()
   def list(%Client{} = client) do
     Client.request(client, :get, "/v2/workspace-members")
   end
@@ -19,7 +19,7 @@ defmodule Attio.WorkspaceMembers do
   @doc """
   Gets a single workspace member by their ID.
   """
-  @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec get(Client.t(), String.t()) :: Client.response()
   def get(%Client{} = client, member_id) do
     Client.request(client, :get, "/v2/workspace-members/#{Client.encode(member_id)}")
   end

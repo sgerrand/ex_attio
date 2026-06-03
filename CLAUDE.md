@@ -65,7 +65,9 @@ lib/attio/meta.ex         # Meta.get_token/1
   `Req.new/1` options (e.g. `plug: {Req.Test, __MODULE__}` in tests). Retries are
   disabled by default — leave retry strategy to the caller.
 
-- **Request/response**: all functions return `{:ok, map()} | {:error, Attio.Error.t() | Exception.t()}`.
+- **Request/response**: single-resource functions return `Client.response/0`
+  (`{:ok, map()} | {:error, Attio.Error.t() | Exception.t()}`); `stream_all`
+  returns `Client.list_response/0` (`{:ok, [map()]} | {:error, …}`).
   Response bodies are decoded JSON with **string keys** (not atoms).
 
 - **Pagination**: cursor-based. `list/2-3` returns one page. `Client.paginate/3`

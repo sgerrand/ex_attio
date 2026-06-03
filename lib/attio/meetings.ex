@@ -30,7 +30,7 @@ defmodule Attio.Meetings do
     * `:limit` - Number of meetings per page.
     * `:cursor` - Pagination cursor from a previous response.
   """
-  @spec list(Client.t(), keyword()) :: {:ok, map()} | {:error, term()}
+  @spec list(Client.t(), keyword()) :: Client.response()
   def list(%Client{} = client, params \\ []) do
     Client.request(client, :get, "/v2/meetings", params: params)
   end
@@ -38,7 +38,7 @@ defmodule Attio.Meetings do
   @doc """
   Gets a single meeting by its ID.
   """
-  @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec get(Client.t(), String.t()) :: Client.response()
   def get(%Client{} = client, meeting_id) do
     Client.request(client, :get, "/v2/meetings/#{Client.encode(meeting_id)}")
   end
@@ -53,7 +53,7 @@ defmodule Attio.Meetings do
     * `"end_time"` - ISO 8601 end timestamp.
 
   """
-  @spec create(Client.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec create(Client.t(), map()) :: Client.response()
   def create(%Client{} = client, attrs) when is_map(attrs) do
     Client.request(client, :post, "/v2/meetings", json: %{"data" => attrs})
   end
@@ -61,7 +61,7 @@ defmodule Attio.Meetings do
   @doc """
   Updates a meeting.
   """
-  @spec update(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec update(Client.t(), String.t(), map()) :: Client.response()
   def update(%Client{} = client, meeting_id, attrs) when is_map(attrs) do
     Client.request(client, :patch, "/v2/meetings/#{Client.encode(meeting_id)}",
       json: %{"data" => attrs}
@@ -71,7 +71,7 @@ defmodule Attio.Meetings do
   @doc """
   Deletes a meeting.
   """
-  @spec delete(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec delete(Client.t(), String.t()) :: Client.response()
   def delete(%Client{} = client, meeting_id) do
     Client.request(client, :delete, "/v2/meetings/#{Client.encode(meeting_id)}")
   end

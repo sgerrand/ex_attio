@@ -14,7 +14,7 @@ defmodule Attio.Objects do
   @doc """
   Lists all objects in the workspace.
   """
-  @spec list(Client.t()) :: {:ok, map()} | {:error, term()}
+  @spec list(Client.t()) :: Client.response()
   def list(%Client{} = client) do
     Client.request(client, :get, "/v2/objects")
   end
@@ -28,7 +28,7 @@ defmodule Attio.Objects do
       Attio.Objects.get(client, "97052eb9-e65e-443f-a297-f2d9a4a7f795")
 
   """
-  @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec get(Client.t(), String.t()) :: Client.response()
   def get(%Client{} = client, object) do
     Client.request(client, :get, "/v2/objects/#{Client.encode(object)}")
   end
@@ -43,7 +43,7 @@ defmodule Attio.Objects do
     * `"plural_noun"` - Display name for multiple records (e.g. `"Deals"`)
 
   """
-  @spec create(Client.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec create(Client.t(), map()) :: Client.response()
   def create(%Client{} = client, attrs) when is_map(attrs) do
     Client.request(client, :post, "/v2/objects", json: %{"data" => attrs})
   end
@@ -51,7 +51,7 @@ defmodule Attio.Objects do
   @doc """
   Updates an object's configuration.
   """
-  @spec update(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec update(Client.t(), String.t(), map()) :: Client.response()
   def update(%Client{} = client, object, attrs) when is_map(attrs) do
     Client.request(client, :patch, "/v2/objects/#{Client.encode(object)}",
       json: %{"data" => attrs}
@@ -61,7 +61,7 @@ defmodule Attio.Objects do
   @doc """
   Lists saved views for an object.
   """
-  @spec list_views(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec list_views(Client.t(), String.t()) :: Client.response()
   def list_views(%Client{} = client, object) do
     Client.request(client, :get, "/v2/objects/#{Client.encode(object)}/views")
   end

@@ -29,7 +29,7 @@ defmodule Attio.Notes do
     * `:limit` - Number of notes per page.
     * `:cursor` - Pagination cursor from a previous response.
   """
-  @spec list(Client.t(), keyword()) :: {:ok, map()} | {:error, term()}
+  @spec list(Client.t(), keyword()) :: Client.response()
   def list(%Client{} = client, params \\ []) do
     Client.request(client, :get, "/v2/notes", params: params)
   end
@@ -37,7 +37,7 @@ defmodule Attio.Notes do
   @doc """
   Gets a single note by its ID.
   """
-  @spec get(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec get(Client.t(), String.t()) :: Client.response()
   def get(%Client{} = client, note_id) do
     Client.request(client, :get, "/v2/notes/#{Client.encode(note_id)}")
   end
@@ -53,7 +53,7 @@ defmodule Attio.Notes do
     * `"content"` - Note body as a document object.
 
   """
-  @spec create(Client.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec create(Client.t(), map()) :: Client.response()
   def create(%Client{} = client, attrs) when is_map(attrs) do
     Client.request(client, :post, "/v2/notes", json: %{"data" => attrs})
   end
@@ -61,7 +61,7 @@ defmodule Attio.Notes do
   @doc """
   Updates a note.
   """
-  @spec update(Client.t(), String.t(), map()) :: {:ok, map()} | {:error, term()}
+  @spec update(Client.t(), String.t(), map()) :: Client.response()
   def update(%Client{} = client, note_id, attrs) when is_map(attrs) do
     Client.request(client, :patch, "/v2/notes/#{Client.encode(note_id)}",
       json: %{"data" => attrs}
@@ -71,7 +71,7 @@ defmodule Attio.Notes do
   @doc """
   Deletes a note.
   """
-  @spec delete(Client.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  @spec delete(Client.t(), String.t()) :: Client.response()
   def delete(%Client{} = client, note_id) do
     Client.request(client, :delete, "/v2/notes/#{Client.encode(note_id)}")
   end

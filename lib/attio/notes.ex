@@ -59,9 +59,7 @@ defmodule Attio.Notes do
   @spec stream_all(Client.t(), keyword()) ::
           {:ok, [map()]} | {:error, Attio.Error.t() | Exception.t()}
   def stream_all(%Client{} = client, params \\ []) do
-    {:ok, stream(client, params) |> Enum.to_list()}
-  catch
-    {:attio_stream_error, err} -> {:error, err}
+    client |> stream(params) |> Client.collect()
   end
 
   @doc """

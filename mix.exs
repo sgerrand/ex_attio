@@ -12,6 +12,9 @@ defmodule Attio.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      # Keep the core Erlang/Elixir PLTs next to the project PLT in _build
+      # (instead of ~/.mix) so CI's _build cache covers all of them.
+      dialyzer: [plt_core_path: "_build/#{Mix.env()}"],
       test_coverage: [tool: ExCoveralls],
 
       # Hex
@@ -55,6 +58,7 @@ defmodule Attio.MixProject do
       {:excoveralls, "~> 0.18", only: :test},
       {:plug, "~> 1.0", only: :test},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev], runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end

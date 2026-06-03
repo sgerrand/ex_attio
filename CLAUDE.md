@@ -20,6 +20,8 @@ mix deps.get   # first-time setup: fetch all dependencies
 
 CI tests the matrix Elixir 1.17–1.19 × OTP 25–28. The lint checks (format,
 credo, unused deps) run only on the Elixir 1.19 / OTP 28 combination.
+Dialyzer runs as a separate CI job on the `.tool-versions` pins, with the
+PLT cached in `_build`.
 
 ## Common Commands
 
@@ -30,6 +32,7 @@ mix test test/attio/records_test.exs:42  # Run a single test by line number
 mix format                      # Format code
 mix format --check-formatted    # Check formatting (used by CI / pre-commit hook)
 mix credo --strict              # Static analysis
+mix dialyzer                    # Type analysis (first run builds the PLT — slow)
 mix deps.unlock --check-unused  # Verify no unused deps are locked
 mix docs                        # Generate ExDoc documentation
 mix deps.get                    # Fetch dependencies

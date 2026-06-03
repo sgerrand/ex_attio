@@ -33,6 +33,7 @@ updates:
     groups:
       elixir:
         applies-to: version-updates
+        dependency-type: development
         patterns:
           - "*"
       security:

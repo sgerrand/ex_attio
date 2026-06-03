@@ -1,18 +1,15 @@
 pre-commit:
   parallel: true
   commands:
-    mix-format:
-      glob: "*.{ex,exs}"
-      run: mix format --check-formatted
     actionlint:
       glob: ".github/workflows/*.yml"
       run: actionlint {staged_files}
-    check-github-workflows:
-      glob: ".github/workflows/*.yml"
-      run: check-jsonschema --builtin-schema vendor.github-workflows {staged_files}
     check-dependabot:
       glob: ".github/dependabot.{yml,yaml}"
       run: check-jsonschema --builtin-schema vendor.dependabot {staged_files}
+    check-github-workflows:
+      glob: ".github/workflows/*.yml"
+      run: check-jsonschema --builtin-schema vendor.github-workflows {staged_files}
     check-release-please-config:
       glob: "release-please-config.json"
       run: check-jsonschema --schemafile https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json {staged_files}
@@ -22,6 +19,17 @@ pre-commit:
     markdownlint:
       glob: "*.md"
       run: markdownlint-cli2 {staged_files}
-    mix-credo:
+    mix-format:
       glob: "*.{ex,exs}"
+      run: mix format --check-formatted
+    mix-compile:
+      run: mix compile --warnings-as-errors
+
+pre-push:
+  commands:
+    unused-deps:
+      run: mix deps.unlock --check-unused
+    credo:
       run: mix credo --strict
+    test:
+      run: mix test --warnings-as-errors

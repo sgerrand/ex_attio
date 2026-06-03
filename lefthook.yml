@@ -16,9 +16,9 @@ pre-commit:
     check-release-please-manifest:
       glob: ".release-please-manifest.json"
       run: check-jsonschema --schemafile https://raw.githubusercontent.com/googleapis/release-please/main/schemas/manifest.json {staged_files}
-    markdownlint:
+    mado:
       glob: "*.md"
-      run: markdownlint-cli2 {staged_files}
+      run: mado check {staged_files}
     mix-format:
       glob: "*.{ex,exs}"
       run: mix format --check-formatted

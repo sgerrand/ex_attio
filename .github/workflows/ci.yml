@@ -105,11 +105,7 @@ jobs:
       with:
         persist-credentials: false
     - name: Lint Markdown files
-      uses: DavidAnson/markdownlint-cli2-action@6b51ade7a9e4a75a7ad929842dd298a3804ebe8b # v23.1.0
-      with:
-        globs: "**/*.md"
-        config: ".markdownlint-cli2.jsonc"
-
+      uses: akiomik/mado@9b5cb3a1d234ddbacad4dd811aaa2a1e671d5306 # v0.3.0
 
   test:
     name: Tests (Elixir ${{ matrix.elixir }} / OTP ${{ matrix.otp }})

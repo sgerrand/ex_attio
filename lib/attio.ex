@@ -45,6 +45,9 @@ defmodule Attio do
       `:status`, `:type`, `:code`, and `:message` fields.
     * `{:error, exception}` – a transport-level error from the HTTP client.
 
+  Both error shapes are exceptions: `Attio.Error` and the transport errors
+  raised by the HTTP client can be passed to `raise/1` or `Exception.message/1`.
+
   ## Pagination
 
   Resources that return lists support cursor-based pagination. All paginated

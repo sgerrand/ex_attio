@@ -54,6 +54,20 @@ defmodule Attio.ClientTest do
                Attio.Client.request(client, :get, "/v2/meta/token")
     end
 
+    test "fills defaults for a partial Attio error body", %{client: client} do
+      Req.Test.stub(__MODULE__, fn conn ->
+        conn
+        |> Plug.Conn.put_status(429)
+        |> Req.Test.json(%{"status_code" => 429, "type" => "rate_limit_error"})
+      end)
+
+      assert {:error,
+              %Attio.Error{status: 429, type: "rate_limit_error", code: "unknown"} = error} =
+               Attio.Client.request(client, :get, "/v2/meta/token")
+
+      assert is_binary(error.message)
+    end
+
     test "returns transport exception on connection error" do
       error = %Req.TransportError{reason: :econnrefused}
 
@@ -64,6 +78,31 @@ defmodule Attio.ClientTest do
       client = %Attio.Client{req: req}
 
       assert {:error, ^error} = Attio.Client.request(client, :get, "/v2/meta/token")
+    end
+  end
+
+  describe "Attio.Error as an exception" do
+    test "Exception.message/1 summarises status, type, code, and message" do
+      error = %Attio.Error{
+        status: 404,
+        type: "invalid_request_error",
+        code: "not_found",
+        message: "Object not found."
+      }
+
+      assert Exception.message(error) ==
+               "Attio API error (HTTP 404, invalid_request_error/not_found): Object not found."
+    end
+
+    test "can be raised" do
+      error = %Attio.Error{
+        status: 500,
+        type: "api_error",
+        code: "internal_server_error",
+        message: "boom"
+      }
+
+      assert_raise Attio.Error, ~r/HTTP 500/, fn -> raise error end
     end
   end
 end

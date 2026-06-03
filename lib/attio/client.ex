@@ -89,28 +89,34 @@ defmodule Attio.Client do
       {:ok, %{status: status, body: body}} when status in 200..299 ->
         {:ok, body}
 
-      {:ok,
-       %{
-         body: %{
-           "status_code" => status,
-           "type" => type,
-           "code" => code,
-           "message" => message
-         }
-       }} ->
-        {:error, %Attio.Error{status: status, type: type, code: code, message: message}}
-
       {:ok, %{status: status, body: body}} ->
-        {:error,
-         %Attio.Error{
-           status: status,
-           type: "unknown_error",
-           code: "unknown",
-           message: inspect(body)
-         }}
+        {:error, build_error(status, body)}
 
       {:error, exception} ->
         {:error, exception}
     end
+  end
+
+  # Builds an Attio.Error from a non-2xx response body. A structured Attio error
+  # body carries at least a "type"; missing fields fall back to sensible
+  # defaults so partial bodies still produce a usable error. Anything else
+  # (e.g. an HTML error page, a bare string) becomes an "unknown_error".
+  @spec build_error(non_neg_integer(), term()) :: Attio.Error.t()
+  defp build_error(status, %{"type" => type} = body) do
+    %Attio.Error{
+      status: body["status_code"] || status,
+      type: type,
+      code: body["code"] || "unknown",
+      message: body["message"] || inspect(body)
+    }
+  end
+
+  defp build_error(status, body) do
+    %Attio.Error{
+      status: status,
+      type: "unknown_error",
+      code: "unknown",
+      message: inspect(body)
+    }
   end
 end

@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0](https://github.com/sgerrand/ex_attio/compare/v0.2.0...v0.3.0) (2026-06-03)
+
+
+### Features
+
+* **client:** reject a blank api_key in new/1 ([4449f9d](https://github.com/sgerrand/ex_attio/commit/4449f9dfb2cf889b909d4bd521f40ee5c0329a7b))
+* **error:** make Attio.Error an exception and harden error parsing ([2bc829f](https://github.com/sgerrand/ex_attio/commit/2bc829f341c9ece30bd98c4e0f847aa0b045d9f5))
+
+
+### Bug Fixes
+
+* **client:** normalise empty success bodies to a map ([98b27dc](https://github.com/sgerrand/ex_attio/commit/98b27dc93dd74d142194ef9653f09259a4721683))
+
 ## [0.2.0](https://github.com/sgerrand/ex_attio/compare/v0.1.1...v0.2.0) (2026-04-20)
 
 

@@ -2,7 +2,7 @@ defmodule Attio.MixProject do
   use Mix.Project
 
   @repo_url "https://github.com/sgerrand/ex_attio"
-  @version "0.3.0"
+  @version "0.3.1"
 
   def project do
     [

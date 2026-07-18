@@ -59,11 +59,11 @@ for attribute value formats.
 
 ### Prerequisites
 
-This project targets Elixir ~> 1.17 and OTP 25–28. The exact versions used for
+This project targets Elixir ~> 1.17 and OTP 25–29. The exact versions used for
 development are pinned in `.tool-versions`:
 
-- Erlang 28.4
-- Elixir 1.19.4-otp-28
+- Erlang 29.0.3
+- Elixir 1.20.2-otp-29
 
 If you use [asdf](https://asdf-vm.com) or [mise](https://mise.jdx.dev), the
 correct versions will be selected automatically.

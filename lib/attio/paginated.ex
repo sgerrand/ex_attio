@@ -13,11 +13,6 @@ defmodule Attio.Paginated do
   #
   #     use Attio.Paginated, resource: "notes"
 
-  # This macro's body runs at compile time, and the functions it generates
-  # execute under the caller module (Notes/Tasks/Meetings/Threads) — so cover
-  # attributes those hits there, not to this file. Each caller's stream/2 and
-  # stream_all/2 tests exercise the generated code.
-  # coveralls-ignore-start
   defmacro __using__(opts) do
     resource = Keyword.fetch!(opts, :resource)
     module = inspect(__CALLER__.module)
@@ -57,6 +52,4 @@ defmodule Attio.Paginated do
       end
     end
   end
-
-  # coveralls-ignore-stop
 end

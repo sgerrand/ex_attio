@@ -10,7 +10,7 @@ beyond `req` (HTTP client built on Finch).
 
 ## Development Setup
 
-Prerequisites are pinned in `.tool-versions` (Erlang 28.4, Elixir 1.19.4-otp-28).
+Prerequisites are pinned in `.tool-versions` (Erlang 29.0.3, Elixir 1.20.2-otp-29).
 Both [asdf](https://asdf-vm.com) and [mise](https://mise.jdx.dev) pick these up
 automatically.
 
@@ -18,8 +18,8 @@ automatically.
 mix deps.get   # first-time setup: fetch all dependencies
 ```
 
-CI tests the matrix Elixir 1.17–1.19 × OTP 25–28. The lint checks (format,
-credo, unused deps) run only on the Elixir 1.19 / OTP 28 combination.
+CI tests the matrix Elixir 1.17–1.20 × OTP 25–29. The lint checks (format,
+credo, unused deps) run only on the Elixir 1.20 / OTP 29 combination.
 Dialyzer runs as a separate CI job on the `.tool-versions` pins, with the
 PLT cached in `_build`.
 

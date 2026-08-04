@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.4](https://github.com/sgerrand/ex_attio/compare/v0.3.3...v0.3.4) (2026-08-04)
+
+
+### Bug Fixes
+
+* **deps:** bump req from 0.6.2 to 0.6.3 ([#32](https://github.com/sgerrand/ex_attio/issues/32)) ([63af211](https://github.com/sgerrand/ex_attio/commit/63af211fb6b096a0576cb36b29e5cccaeb42caa2))
+
 ## [0.3.3](https://github.com/sgerrand/ex_attio/compare/v0.3.2...v0.3.3) (2026-07-18)
 
 

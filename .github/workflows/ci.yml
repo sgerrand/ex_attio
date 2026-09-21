@@ -139,7 +139,7 @@ jobs:
       with:
         persist-credentials: false
     - name: Lint Markdown files
-      uses: akiomik/mado@177695b4d2cd6b107f881a8e91067cc7588fb129 # v0.3.1
+      uses: akiomik/mado@6642676268ddaad6187482ef57d95e218c6b865c # v0.3.2
 
   test:
     name: Tests (Elixir ${{ matrix.elixir }} / OTP ${{ matrix.otp }})
